@@ -1,0 +1,4 @@
+interface:
+  display_name: "运行地址冒烟测试"
+  short_description: "验证已运行前端 URL 和后端 URL 的可达性、环境版本、后端健康、代理/CORS、静态资源和基础网络状态"
+  default_prompt: "Use $runtime-url-smoke-test to validate running frontend and backend URLs before deeper SSO, data consistency, and filter testing."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redis缓存设计"
+  short_description: "设计Redis key、TTL/失效、击穿保护、权限隔离、分布式锁、限流、幂等和任务状态。"
+  default_prompt: "Use $redis-cache-design-patterns for Redis cache key design, TTL/invalidation, stampede protection, permission-safe dimensions, stale fallback, locks, rate limits, idempotency, job progress, pools, timeouts, and observability."

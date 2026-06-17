@@ -1,0 +1,4 @@
+interface:
+  display_name: "海尔 SSO 接入"
+  short_description: "接入或评审海尔 IAM/IAMA 前后端单点登录，覆盖 script SDK、规范 login 返回、后端 token 校验、受保护 API、401/403 和断点闭环。"
+  default_prompt: "Use $haier-sso-integration to implement or review Haier IAM/IAMA SSO across frontend SDK/script access, canonical login responses, backend-owned token validation, protected APIs, and auth breakpoints."

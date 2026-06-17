@@ -1,0 +1,4 @@
+interface:
+  display_name: "交付版本管理"
+  short_description: "维护原型API模型前后端测试报告的版本链路和交付物索引"
+  default_prompt: "当用户提出交付物版本管理、原型/API/数据模型/后端/前端/测试报告对应关系、prototype-v1 到 test-v1、发布包清单、哪个文档对应哪个版本，或前端/后端/原型代码需要文件级功能清单、代码区间、修改内容、版本信息追踪时，使用 $delivery-version-management 生成版本链路、交付物索引，并维护 code-file sidecar change ledger：改代码前读/创建 __change_logs__/<file>.changes.md，改完追加功能、代码范围、影响契约、验证和回滚记录。"

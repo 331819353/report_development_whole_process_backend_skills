@@ -1,0 +1,4 @@
+interface:
+  display_name: "Java SpringBoot后端开发"
+  short_description: "沉淀 Spring Boot 后端目录、分层、统一响应、异常、JWT/SSO、Profile、Maven/Docker 约定。"
+  default_prompt: "Use $java-springboot-backend-development when developing or reviewing a Java Spring Boot backend project structure, REST API layering, unified response, global exceptions, JWT/SSO with Spring Security, profiles, Maven/Docker, and naming conventions."

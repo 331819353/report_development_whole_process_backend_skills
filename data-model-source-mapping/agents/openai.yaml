@@ -1,0 +1,4 @@
+interface:
+  display_name: "数据模型源映射"
+  short_description: "沉淀OLAP模型、指标口径、数值精度、源映射和血缘"
+  default_prompt: "Use $data-model-source-mapping to create reusable OLAP-aware data model files with business questions, grains, facts, dimensions, metrics, numeric precision/display contracts, layers, source mappings, permissions, quality rules, and traceability."

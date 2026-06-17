@@ -1,0 +1,4 @@
+interface:
+  display_name: "缺口台账管理"
+  short_description: "记录需求、模型、API、后端、前端、权限、环境、性能和测试中的缺口、假设、阻塞项和解决状态。"
+  default_prompt: "Use $gap-ledger-management to create or update a gap ledger for missing, assumed, contradictory, or unverified delivery information."

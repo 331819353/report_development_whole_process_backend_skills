@@ -1,0 +1,4 @@
+interface:
+  display_name: "数据转换与响应适配"
+  short_description: "设计源数据到 API 响应、API 响应到前端视图模型的字段映射、聚合派生、数值精度、单位缩放、枚举日期和默认值规则。"
+  default_prompt: "Use $data-transformation-adapter-design to design backend data transformations and frontend response adapters between source payloads, API contracts, UI view models, and numeric precision/display contracts."

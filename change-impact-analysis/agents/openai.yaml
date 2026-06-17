@@ -1,0 +1,5 @@
+interface:
+  display_name: "变更影响分析"
+  short_description: "分析需求变更对页面接口模型测试文档的影响范围"
+  default_prompt: "当用户提出需求变更、指标/口径/筛选/权限/接口/字段变化，或询问哪些页面、组件、API、模型、测试用例和文档受影响时，使用 $change-impact-analysis 生成影响矩阵、回归范围、版本更新计划和阻塞问题。"
+

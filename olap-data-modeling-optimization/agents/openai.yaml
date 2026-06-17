@@ -1,0 +1,4 @@
+interface:
+  display_name: "OLAP建模优化"
+  short_description: "设计和审计OLAP事实维度、宽表、聚合表、物化视图、快照、指标聚合和服务层查询模型。"
+  default_prompt: "Use $olap-data-modeling-optimization for analytical modeling: OLAP grain, fact/dimension design, wide tables, aggregate tables, materialized views, snapshots, metric additivity, preaggregation, freshness, and report serving performance."

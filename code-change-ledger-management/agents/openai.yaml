@@ -1,0 +1,4 @@
+interface:
+  display_name: "代码变更台账"
+  short_description: "维护前端、后端和原型源码的文件级变更台账，记录改前阅读、改后版本、代码范围、diff、验证和回滚。"
+  default_prompt: "Use $code-change-ledger-management when code changes need sidecar __change_logs__ ledgers, pre-change read/create evidence, post-change version entries, changed code ranges, unified diff or reversible patch evidence, verification, affected contracts, and rollback notes."

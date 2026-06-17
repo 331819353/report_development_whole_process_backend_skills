@@ -1,0 +1,4 @@
+interface:
+  display_name: "报表交付链路治理"
+  short_description: "治理需求、原型、模型、API、后端、前端、测试、发布之间的阶段交接、证据、缺口和ready判定。"
+  default_prompt: "Use $report-delivery-pipeline-governance to route report delivery stages, validate handoff contracts, connect requirement/prototype/model/API/backend/frontend/test/release artifacts, and decide ready/partial/blocked without replacing stage-specific implementation skills."

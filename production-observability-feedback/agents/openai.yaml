@@ -1,0 +1,4 @@
+interface:
+  display_name: "上线监控与反馈闭环"
+  short_description: "设计上线后接口监控前端错误性能埋点用户反馈和刷新SLA闭环"
+  default_prompt: "当用户提出上线后监控、接口监控、前端错误、性能指标、访问埋点、用户反馈、异常告警、数据刷新SLA、后端日志配置或生产质量闭环时，使用 $production-observability-feedback 输出监控指标、告警、埋点、结构化后端日志字段/脱敏/requestId-traceId/慢查询阈值/日志点和反馈闭环方案。"

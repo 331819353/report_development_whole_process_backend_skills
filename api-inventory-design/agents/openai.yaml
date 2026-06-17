@@ -1,0 +1,4 @@
+interface:
+  display_name: "API 清单设计"
+  short_description: "从需求、模型、前后端契约和测试发现设计接口清单"
+  default_prompt: "Use $api-inventory-design to design a reusable API inventory from requirements, metrics, data models, frontend/backend contracts, and prototype data contracts."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "环境Profile契约"
+  short_description: "定义和审计测试/生产环境Profile、API地址、认证、数据源、proxy/CORS、mock隔离和运行验收。"
+  default_prompt: "Use $environment-profile-contract when frontend/backend/runtime delivery needs .env.test and .env.production profile separation, API base URL alignment, auth/source/proxy/CORS behavior, mock isolation, build/start evidence, and production readiness."

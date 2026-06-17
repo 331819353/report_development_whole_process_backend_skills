@@ -1,0 +1,5 @@
+interface:
+  display_name: "数据质量校验"
+  short_description: "校验完整性唯一性及时性准确性异常值和跨源一致性"
+  default_prompt: "当用户提出数据质量、缺失/重复/延迟/异常值、口径漂移、跨源一致性、接口正常但数据不可信或生产数据验收时，使用 $data-quality-validation 设计/执行质量规则并输出可信度结论。"
+

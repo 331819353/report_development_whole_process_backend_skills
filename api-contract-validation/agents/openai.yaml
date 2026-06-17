@@ -1,0 +1,4 @@
+interface:
+  display_name: "API 契约校验"
+  short_description: "核对 API 文档、前端期望、后端路由、mock、OpenAPI、数据库/上游样例和运行响应之间的字段级契约差异，覆盖数值精度/单位。"
+  default_prompt: "Use $api-contract-validation to compare API contract evidence across docs, frontend expectations, backend routes, mocks, OpenAPI schemas, source samples, runtime responses, and numeric precision/display semantics."

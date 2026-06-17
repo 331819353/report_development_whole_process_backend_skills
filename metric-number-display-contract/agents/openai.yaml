@@ -1,0 +1,4 @@
+interface:
+  display_name: "指标数值显示契约"
+  short_description: "定义和校验指标单位、缩放、小数、百分比、tooltip/export精度、空值零值和formatter归属。"
+  default_prompt: "Use $metric-number-display-contract for metric numeric display contracts: raw/display units, scale, precision, rounding, percent wording, tooltip/export precision, formatter ownership, null/zero/denominator-zero behavior, and API/frontend/export consistency."

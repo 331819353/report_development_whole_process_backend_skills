@@ -1,0 +1,4 @@
+interface:
+  display_name: "权限矩阵设计与测试"
+  short_description: "输出角色页面字段操作数据范围导出权限矩阵并设计验收用例"
+  default_prompt: "当用户提出权限矩阵、多角色验收、总部/区域/门店/供应商/管理员视角、字段可见性、数据范围、操作权限、导出权限、行列级权限或权限测试时，使用 $permission-matrix-validation 输出权限矩阵和多角色测试证据。"

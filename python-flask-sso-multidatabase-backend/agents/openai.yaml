@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Flask后端架构"
+  short_description: "按 Python + Flask + SQLAlchemy + SSO + SQLite/MySQL/Oracle/StarRocks 沉淀后端项目架构、目录结构、鉴权和多数据库约定。"
+  default_prompt: "Use $python-flask-sso-multidatabase-backend when developing or reviewing a Python Flask backend that should follow the SSO, SQLAlchemy, multi-database, layered directory, testing, and deployment architecture baseline."
