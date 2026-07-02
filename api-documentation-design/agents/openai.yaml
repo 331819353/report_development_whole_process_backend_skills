@@ -1,4 +1,4 @@
 interface:
   display_name: "API 文档设计"
-  short_description: "将接口清单、需求、路由实现或模型资料整理为可实现、可联调、可测试的 API 文档，包含SSO请求头和数值精度/单位契约。"
-  default_prompt: "Use $api-documentation-design to create handoff-ready API documentation from inventories, requirements, implemented routes, contracts, or model/source artifacts, including SSO auth headers when protected APIs are in scope and numeric precision/display contracts for metric-bearing fields."
+  short_description: "将接口清单、需求、prototype 数据摘要、mock-to-real 矩阵、路由实现或模型资料整理为可实现、可联调、可测试的 API 文档，包含SSO请求头和数值精度/单位契约。"
+  default_prompt: "Use $api-documentation-design to create handoff-ready API documentation from inventories, requirements, implemented routes, contracts, model/source artifacts, prd/execution/prd-targeted-reading-analysis.md, prototype PRD execution files, docs/prototype-data-summary.md, Mock API To HTTP API Replacement Matrix, and Metric To Interface / Source Mapping. Document SRC-* / READ-* / ENTRY-* / GAP-* rows, replacement rows, component data keys, filters, actions, exports, detail/drilldown payloads, conclusion-rule inputs, SSO auth headers when protected APIs are in scope, and numeric precision/display contracts for metric-bearing fields."

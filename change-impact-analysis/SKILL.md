@@ -44,7 +44,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
    Rate each affected item as `breaking`, `behavior-change`, `data-change`, `visual-change`, `test-only`, `doc-only`, or `none`. Include user-facing impact and rollback risk.
 
 5. Define update plan.
-   For every affected artifact, state required update, owner workflow, target status, and dependency order. Route to `technical-solution-workflow`, `$api-documentation-design`, `$backend-development-workflow`, `frontend-development-workflow`, `testing-integration-workflow`, `metric-governance-lineage`, or `$delivery-version-management` when that workflow owns the affected artifact.
+   For every affected artifact, state required update, owner workflow, target status, and dependency order. Route to `$technical-solution-workflow`, `$api-documentation-design`, `$backend-development-workflow`, `$frontend-development-workflow`, `$testing-integration-workflow`, `$metric-governance-lineage`, or `$delivery-version-management` when that workflow owns the affected artifact.
 
 6. Define regression scope.
    Select API, E2E, screenshot regression, data consistency, filter linkage, permission, export, and data quality cases that must be rerun. For filter changes, put data-completeness regression before filter-binding regression: option data, row grain, required fields, default/non-default states, empty/no-permission states, and resolver/API branches. If automation exists, identify generated test files or case IDs.

@@ -11,6 +11,7 @@ Run this gate when any of these are true:
 - The task designs, restores, optimizes, repairs, or implements a report/dashboard/prototype/page.
 - A workflow converts requirements into component mapping, API lists, data models, API docs, adapters, function descriptions, or test cases.
 - A design decision would affect report type, information hierarchy, component choice, metric口径, filter scope, drilldown, action loop, permission behavior, visual layout, or implementation feasibility.
+- A requirement document already contains a design idea, page layout, component list, chart choice, or prototype story that downstream work may otherwise implement directly.
 - A provided sample/HTML/mock/API can be internally consistent but still not answer the user's real business question.
 
 For narrow copy, typo, or non-design code fixes, record `Design reasonableness: not needed`.
@@ -21,12 +22,14 @@ Check the design across these dimensions:
 
 1. Business fit.
    The design names the user, usage moment, primary question, decision/action, and expected conclusion. The first meaningful viewport answers that question or exposes the correct action entry.
+   A good report should reduce one step of thinking for the reader: it declares the primary decision question, the 3-second main point, the conclusion/status before dense evidence, comparison baselines for primary metrics, and the next drilldown/action route. If the user must first infer what question the page is answering, record a `RPT-NO-PRIMARY-QUESTION` or `DESIGN-*` finding.
 
 2. Report-type fit.
    The selected report type matches the task: overview for health/status, diagnosis for why, detail for record lookup, evaluation for scoring/ranking, recap for narrative review, anomaly for alerts, execution for task closure, reconciliation for data correctness.
 
 3. Information hierarchy.
    Content has a clear priority order: conclusion/status, evidence/breakdown, detail, action. It is not a flat wall of equal-weight charts or decorative cards.
+   Decision reports follow an inverted-pyramid path: conclusion/judgment -> supporting evidence -> driver/cause -> detail/source -> action/trust. Detail-first layouts are reasonable only for explicit detail-query, reconciliation-first, audit-first, or source-record lookup tasks.
 
 4. Component necessity.
    Every must-have component answers a named business question, has a distinct semantic role, and is not duplicated by another chart with the same message.
@@ -37,6 +40,7 @@ Check the design across these dimensions:
    Detail Table designs specifically need a row-level lookup/evidence/action task, row grain, primary key/object field, visible column priority, column type/width/alignment, default sort, search/sort/pagination/export execution scope, row detail/action payload, table-body height and visible-row budget, component-local filter limits, and fallback for too many columns or too few rows.
    Complex/grouped table-header designs specifically need real business field groups, `columnTree` or nested grouped columns, leaf field mapping, unit/definition metadata, computed `colSpan`/`rowSpan` or depth/leaf-count rules, max depth `<=3` by default, fixed whole-header behavior, frozen row/primary columns when horizontally scrolling, component-local filter vs per-column header-filter separation, density fallback, tooltip definitions, and enough body-row budget. A grouped header that only adds visual bands without field relationships is a `DESIGN-*` finding.
    Pivot Table designs specifically need a multidimensional cross-summary task, row dimensions, column dimensions, measures, aggregation formulas/functions, subtotal/grand-total semantics, percentage/rate numerator-denominator recomputation rules, hierarchy depth, natural time sorting, S2/project analytical renderer, fixed header/frozen row dimension behavior, density fallback, restrained conditional formatting, exact cell tooltip/drilldown payload, and state handling.
+   Primary metrics are unreasonable as isolated display numbers. They should form a relationship network such as result -> driver -> dimension/object -> detail -> action/source. A primary metric without a target, baseline, benchmark, historical range, threshold, denominator, or other explicit comparison basis cannot carry the main judgment.
 
 6. OLAP data modeling fit.
    Reporting/BI/dashboard models name business questions, subject areas, business processes, grain, layer/type, fact/dimension/summary/application role, metric additivity, time口径, conformed dimensions, SCD/history need, many-to-many handling, late-arriving/backfill strategy, quality rules, and lineage. A model that starts from fields or source tables without business process/grain, mixes grains, treats ratios as additive, uses current-only dimensions when historical state matters, or builds an unbounded super-wide table is a `DESIGN-*` finding.
@@ -54,10 +58,13 @@ Check the design across these dimensions:
 9. Visual/layout reasonableness.
    Shell, template, grid, first viewport, block spans, density, labels, legends, tables, and complex diagrams fit the content without duplicate component titles, cramped/narrow/tiny components, overlap, clipping, unreadable text, excessive blank space, or title-node collision. Fixed-height navigation/cards/KPI tiles must declare padding, explicit line-height, gaps, and a passing height budget before acceptance. Page layout owns block placement while each block owns its title/function area; peer component groups use balanced `M * N` layouts when possible; complex diagrams with layer/stage/lane titles must reserve an independent title band and keep titles at least 16px away from the first row of nodes, node borders, child labels, badges, connectors, and edge labels.
    Outer block/grid validity is not enough for composite widgets. Summary zones, nested KPI grids, small metric cells, comparison tiles, and custom card internals must pass fit inside their real sub-containers. Decision-critical metric titles, labels, values, status text, and actions cannot be clipped by `nowrap`/ellipsis without a disclosure path; prefer reserved one- or two-line wrapping, larger min-height, wider zones, stacking, or fewer visible tiles.
-   When modern SaaS / BI Dashboard / UI Kit style is requested, reasonableness also requires tokenized light page surfaces, white analytical cards, thin separators, stable UI Kit controls, visible first-viewport priority, no nested-card/component pileup, and lightweight charts. A visually clean but generic, flat, or chart-heavy shell is a `VIS-*` or `RPT-*` finding, not a pass.
+   When modern SaaS / BI Dashboard / UI Kit style is requested, reasonableness also requires tokenized light page surfaces, optional analytical surfaces, reduced uniform card borders, stable UI Kit controls, visible first-viewport priority, information flow, no nested-card/component pileup, bounded KPI scope, brand/product color hierarchy before status colors, and lightweight charts. A visually clean but generic, flat, card-heavy, KPI-everywhere, red/green-dependent, or chart-heavy shell is a `VIS-*` or `RPT-*` finding, not a pass.
 
 10. Report data-visualization frontend fit.
    Report/BI/dashboard frontends define user purpose, first-screen conclusion, information hierarchy, chart/table choice, metric names/units/precision/口径, filters, linkage, drill-down/drill-through, tooltip/legend/axis semantics, data freshness/quality display, loading/empty/error/no-permission/stale states, component-ready provider mapping, frontend data-volume/performance limits, theme/color/accessibility, and runtime QA evidence. A design that is a flat chart collection, hides the core conclusion, uses misleading chart types, lacks units/口径, fetches broad data for local global filtering, omits edge states, or cannot trace anomalies to detail is a `DESIGN-*` finding.
+   Good-report failures may use stable `RPT-*` IDs from `report-prototype-design-thinking` `references/02-good-report-decision-path.md`, including missing primary question, detail-first hierarchy, flat metric list, missing comparison, missing cause path, missing action path, or static information pileup.
+
+   Existing design ideas inside requirement documents are proposals, not accepted instructions. Before landing them, check whether they preserve the product/report story, user path, information hierarchy, `1920x1080` viewport target, `12 * N` grid, minimum `2*1` block, default `3*2` analytical block, ordinary chart `4*3` maximum, content density, and metric-display boundary. Conflicts are `DESIGN-EXISTING-IDEA-UNVERIFIED` or a more specific `DESIGN-*` finding.
 
 11. API/backend feasibility.
    API endpoints, response models, data models, transformations, auth, pagination, sorting, exports, and error states can support the UI contract without hidden invention. Global/page-level filters and permission scope execute through SQL `WHERE`, source/provider/repository queries, resolver params, Redis/precompute keys, or equivalent source-side scope wherever feasible; component-internal filters may operate on already fetched component data. A design that depends on page/API-level full-materialize-then-filter behavior is a `DESIGN-*` finding unless explicitly bounded.
@@ -116,9 +123,11 @@ Accepted limitations:
 ## Pass Criteria
 
 - The design has one clear business question and a matching report type.
+- The good-report decision path passes or names gaps: 3-second main point, one primary conclusion, comparison basis, cause/location path, drilldown/detail path, and next action.
 - Every must-have component, filter, interaction, dataset, and API has a reason.
 - Reporting/BI/dashboard data models have explicit business process, grain, layer/type, metric additivity, time口径, quality, and lineage decisions.
 - Report data-visualization frontend behavior is feasible when report UI is in scope: first-screen conclusion, appropriate chart/table choices, metric formatting/口径, filters/linkage/drill-through, state coverage, provider mapping, performance limits, and theme/accessibility are explicit.
+- Existing requirement-document design ideas are reviewed before implementation and any accepted/repaired/rejected parts are named.
 - Affecting filters have field/API/resolver bindings and data-variation evidence for at least one non-default state; selected-state-only filtering is not accepted.
 - First-level perspective controls are classified separately from filters, and every schema-changing perspective has component-schema impact plus non-default validation coverage.
 - Perspective navigation indicators have lineage, and cross-perspective consistency has at least one concrete field assertion tying navigation data to overview/journey/chart data.

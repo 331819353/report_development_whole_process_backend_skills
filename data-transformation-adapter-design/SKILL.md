@@ -31,6 +31,10 @@ Backend transformation owns source-to-API correctness. Frontend adapter owns pro
 
 For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
 
+## Targeted Reading Consumption
+
+For PRD/prototype-derived report adapters, read `prd/execution/prd-targeted-reading-analysis.md` before transformation rules. The adapter design must cite consumed `SRC-*` / `READ-*` rows, non-authority notes, and open `ENTRY-*` / `GAP-*` rows that affect source-to-response mapping, response-to-view-model mapping, numeric semantics, null/default behavior, retained mocks, and compatibility decisions. Do not mark an adapter `ready` when targeted reading is missing, generic, or not reflected in field-level mappings.
+
 ## Workflow
 
 1. Identify source payload, target API contract, and UI/view model contract.

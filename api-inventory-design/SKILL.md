@@ -1,6 +1,6 @@
 ---
 name: api-inventory-design
-description: "[后端阶段] 本阶段版本仅服务后端/数据服务设计、API文档/契约、接口实现、运行验证和后端交付；不承接原型设计、前端代码或测试执行。用于在开发前把需求、指标、原型、mock数据、数据源或前端页面梳理成API清单/接口规划。用户提到接口清单、API清单、接口规划、接口拆分、接口复用、快照接口、snapshotDate/dataVersion/loadBatch、页面需要哪些接口、mock转接口、响应字段兼容、新增字段命名、请求参数、响应模型、筛选分页排序、筛选前数据完整性、默认后端技术栈、Python/Flask/连接池/Redis、鉴权、接口优先级时触发；只做清单规划，不写完整API文档或后端代码。"
+description: "[后端阶段] 本阶段版本仅服务后端/数据服务设计、API文档/契约、接口实现、运行验证和后端交付；不承接原型设计、前端代码或测试执行。用于在开发前把需求、指标、prototype PRD 执行包、docs/prototype-data-summary.md、mock数据、数据源或前端页面梳理成API清单/接口规划。用户提到接口清单、API清单、接口规划、接口拆分、接口复用、快照接口、snapshotDate/dataVersion/loadBatch、页面需要哪些接口、mock转接口、Mock API To HTTP API Replacement Matrix、Metric To Interface/Source Mapping、响应字段兼容、新增字段命名、请求参数、响应模型、筛选分页排序、筛选前数据完整性、默认后端技术栈、Python/Flask/连接池/Redis、鉴权、接口优先级时触发；只做清单规划，不写完整API文档或后端代码。"
 ---
 
 # API Inventory Design
@@ -21,6 +21,8 @@ The inventory is a planning and alignment artifact. It defines the API surface, 
 
 - Requirements or page/module descriptions.
 - Metric list and dimension/filter definitions.
+- Prototype PRD execution bundle and `docs/prototype-data-summary.md`, when the work originates from `report-prd-document-generation` or `report-prototype-implementation-workflow`.
+- `Mock API To HTTP API Replacement Matrix` and `Metric To Interface / Source Mapping`, including component data keys, mock endpoints/local datasets, filters, interactions, actions, exports, details, and conclusion-rule inputs.
 - 数据模型文件 or source metadata, if available.
 - Prototype data code, mock/display data, TypeScript types, data-source registry, or component field usage. If the inventory will feed backend/API implementation with simulated data, plan a SQLite fixture database rather than a JSON data source.
 - Existing API notes or backend constraints, if provided.
@@ -54,19 +56,26 @@ Loading guidance:
 
 For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
 
+## Targeted Reading Consumption
+
+For PRD/prototype-derived report work, read `prd/execution/prd-targeted-reading-analysis.md` before endpoint inventory. The API清单 must cite consumed `SRC-*` / `READ-*` rows, note non-authority materials, and link open `ENTRY-*` / `GAP-*` rows to endpoint scope, request params, response models, data-version behavior, filters, exports, detail/drilldown, and conclusion-rule inputs. Do not mark inventory rows `ready` when targeted reading is missing, generic, or not traceable to the affected API family.
+
 ## Workflow
 
 0. Check source authority.
    When multiple artifacts influence the inventory, identify which source owns business scope, visible UI needs, existing API behavior, source model facts, and testing evidence. If artifacts conflict on endpoint scope, request params, response fields, metric grain, permission, or API availability, record `ENTRY-*` findings instead of silently choosing one.
+   For prototype-derived report work, the PRD execution bundle owns report type, page/block/slot/component decisions, interaction behavior, metric definitions, and visible acceptance; `docs/prototype-data-summary.md` owns mock endpoints, local datasets, data keys, and replacement expectations. Do not rebuild API scope from screenshots or final DOM when these files exist.
 
 1. Build page and module coverage.
    List every page, tab, card, chart, table, drawer, export, drilldown, filter option, and action that needs data.
+   Include every component data key, slot, filter surface, toolbar action, export, detail/drilldown trigger, and conclusion-rule input named in the prototype data summary or PRD execution files.
 
 2. Identify data access patterns.
    Separate summary KPIs, trends, rankings, lists, analytical tables, detail drawers, filter options, exports, and operational actions. Avoid forcing all data into one endpoint when grain, refresh, filters, or permissions differ.
 
 3. Define endpoint candidates.
    For each API, state method, path, page/module, purpose, trigger, request source, response model, source model dependency, auth need, cache/performance/SLA expectation, priority, and status.
+   For each API candidate derived from prototype/mock data, include the replacement-matrix row id, original mock endpoint or local dataset, component data key, consuming slot/component, and whether the endpoint provides metric inputs, filter options, action result, export payload, detail payload, or conclusion-rule inputs.
 
 3a. Assign backend reuse patterns.
    For every production-bound or repeated endpoint, classify the backend implementation family: `metadata`, `filter-options`, `query`, `dashboard/snapshot`, `export`, `action`, or `health/status`. Record which common request model, response envelope, query context, permission service, cache/precompute family, pagination/export flow, or formatter can be reused. Mark `DESIGN-*` when an endpoint would require a one-off controller/query without a clear reason.
@@ -89,6 +98,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 8. Mark gaps.
    If an endpoint depends on unknown data models, formulas, enums, filter options, permission rules, or owner decisions, record the gap in the pending column with a stable `GAP-*` ID, impact, owner question, and blocking status.
+   Missing replacement rows, unmapped component data keys, unowned conclusion inputs, and prototype summary files that are absent or stale are blocking gaps for prototype-derived backend inventories.
 
 9. Run the design reasonableness gate.
    Check whether endpoint boundaries, split/merge choices, response model references, request params, dynamic options, exports, actions, auth, and performance notes reasonably support the consuming page and tests. Record unreasonable API inventory choices as `DESIGN-*` findings.

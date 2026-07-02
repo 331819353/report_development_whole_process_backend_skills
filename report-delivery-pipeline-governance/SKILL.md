@@ -15,7 +15,7 @@ Use this copy only inside the backend/data-service skill bundle. Treat frontend,
 
 Use this skill to keep report delivery stages aligned and to decide whether a handoff can proceed across requirement, prototype, data model, API, backend, frontend, testing, release, defect repair, and production feedback.
 
-Use `$delivery-version-management` for version indexes and release bundles. Use `$quality-gate-validation` for concrete gate findings when checking a specific artifact or implementation.
+Use `$delivery-version-management` for version indexes and release bundles. Use `$quality-gate-validation` for concrete gate findings when checking a specific artifact or implementation. For PRD/prototype-derived report work, treat `prd/execution/prd-targeted-reading-analysis.md`, the PRD execution bundle, and `docs/prototype-data-summary.md` as required upstream contracts for every downstream handoff.
 
 ## Reference Loading
 
@@ -32,14 +32,16 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 1. Identify current stage, upstream artifacts, downstream consumers, and claimed readiness.
 2. Map the stage to required handoff artifacts and owning skills.
-3. Check that stable IDs, versions, sources, gaps, evidence, and readiness values link across stages.
-4. Route missing or conflicting work to the owning skill instead of absorbing implementation details.
-5. Return a stage verdict and next-stage entry criteria.
+3. For PRD/prototype-derived work, inventory targeted reading rows, consumed PRD execution files, `docs/prototype-data-summary.md`, component data keys, replacement rows, metric/source/interface rows, filters, actions, exports, details, conclusion inputs, and open `ENTRY-*` / `GAP-*`.
+4. Check that stable IDs, versions, sources, gaps, evidence, code ledgers, environment profiles, and readiness values link across stages.
+5. Route missing or conflicting work to the owning skill instead of absorbing implementation details.
+6. Return a stage verdict and next-stage entry criteria.
 
 ## Required Output
 
 - Current stage and target next stage.
 - Required upstream/downstream artifacts and missing pieces.
+- Targeted reading / PRD / data-summary consumption matrix when applicable.
 - Owning skill routing for each gap or blocker.
 - Readiness: `ready`, `partial`, or `blocked`.
 - Next-stage handoff requirements.
@@ -47,4 +49,5 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not mark a stage ready when required upstream contracts, evidence, versions, profile decisions, code ledgers, or test results are missing.
+- Do not mark a downstream stage ready for PRD/prototype-derived work when targeted reading rows, the PRD execution bundle, `docs/prototype-data-summary.md`, replacement rows, component data keys, metric/source/interface mappings, filter/action/export/detail/conclusion ownership, or downstream version evidence is missing or stale.
 - Do not let a later-stage implementation silently redefine requirement, metric, API, source, permission, or test contracts.

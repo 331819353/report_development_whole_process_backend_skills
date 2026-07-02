@@ -52,6 +52,10 @@ Loading guidance:
 
 For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness-execution-gate.md` before final output, handoff, or readiness. Do not mark the result ready while `LAZY-*` findings remain open, when available local evidence was not inspected, when owning skills were skipped, or when proof is limited to generic statements such as "checked", "optimized", "looks good", or "implemented".
 
+## Targeted Reading Consumption
+
+For PRD/prototype-derived report mapping, read `prd/execution/prd-targeted-reading-analysis.md` before source/model decisions. The model file must cite consumed `SRC-*` / `READ-*` rows, identify authoritative vs non-authoritative source materials, and link `ENTRY-*` / `GAP-*` to source tables, grains, metric formulas, response fields, data-version fields, filter completeness, permission scope, and quality rules. Do not mark source/model rows `ready` when targeted reading is missing, generic, or not reflected in lineage.
+
 ## Workflow
 
 0. Check source authority.

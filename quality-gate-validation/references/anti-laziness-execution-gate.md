@@ -9,6 +9,7 @@ Load this gate for non-trivial implementation, repair, QA, acceptance, handoff, 
 | Check | Required evidence |
 | --- | --- |
 | Evidence-first | List the local/source evidence inspected before making a decision: files, screenshots, runtime URL, logs, API samples, config, ledgers, docs, or command output. |
+| Targeted reading used | For PRD-derived or mixed-source work, cite the relevant `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows from `prd/execution/prd-targeted-reading-analysis.md`; if missing, record why readiness is partial/blocked. |
 | Local evidence exhausted | Inspect available local evidence before asking the user or guessing. Ask only when an unresolved P0/P1 decision remains. |
 | Owning skill used | Name each affected surface and the specific owning skill loaded for it. Broad workflows alone are not enough for chart/table/filter/layout/API/runtime defects. |
 | Decision log | For hard choices, record decision, evidence, rejected alternative, and acceptance impact. Hard choices include template, renderer, source authority, writable target, data/API path, chart/table type, layout canvas, and whether to preserve sample style. |
@@ -26,6 +27,7 @@ Treat these as `LAZY-*` findings. They block `ready` unless an explicit scoped e
 | ID | Smell | Why it blocks |
 | --- | --- | --- |
 | `LAZY-EVIDENCE-THIN` | Gives a conclusion after reading only a top-level file, prompt, or screenshot while relevant local evidence exists. | The conclusion may be based on a convenient subset of evidence. |
+| `LAZY-TARGETED-READING-MISSING` | PRD-derived work skips `prd/execution/prd-targeted-reading-analysis.md`, or the file only says to read everything without source rows, stage extraction goals, and evidence-to-decision trace. | Downstream stages may reinterpret source materials or implement from convenient fragments. |
 | `LAZY-SKILL-SKIP` | Uses only a broad workflow when a specific owning skill is triggered by the affected surface. | Specialty constraints are likely missed. |
 | `LAZY-ASK-BEFORE-INSPECT` | Asks broad user questions before inspecting local files, configs, logs, screenshots, or docs that could answer them. | User clarification becomes a substitute for basic discovery. |
 | `LAZY-GUESS-AUTHORITY` | Does not decide which source wins when requirement, HTML/sample, code, API, data, or runtime evidence disagree. | Implementation may follow the easiest source rather than the authoritative one. |
@@ -51,6 +53,7 @@ Treat these as `LAZY-*` findings. They block `ready` unless an explicit scoped e
 When this gate is used, include:
 
 - Evidence inspected.
+- Targeted reading rows consumed or a blocker/partial note when unavailable.
 - `LAZY-*` findings or explicit no-finding result.
 - Hard decisions and rejected alternatives.
 - Before/after proof for fixes.

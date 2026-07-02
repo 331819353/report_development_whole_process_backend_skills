@@ -15,6 +15,7 @@ Use these prefixes consistently:
 - Metrics: `MET-001`
 - Permission rules: `PERM-001`
 - Data quality rules: `DQ-001`
+- Targeted reading consumption: `READ-CONSUME-001`
 - Source/response mappings: `MAP-001`
 - Presentation boundary rules: `PRES-001`
 - Cache/precompute rules: `CACHE-001`
@@ -52,6 +53,22 @@ State:
 - expected consumers: frontend, API docs, testing, operations, downstream services;
 - authoritative stack or default stack decision;
 - implementation mode: design only / API documentation / implementation / repair.
+
+For report/dashboard/cockpit work produced by the configurable prototype flow, include the upstream handoff inventory before service design:
+
+| Handoff ID | Artifact | Required content | Consumed by | Status |
+| --- | --- | --- | --- | --- |
+| HANDOFF-001 | `prd/execution/prd-targeted-reading-analysis.md` | source material inventory, stage reading plan, evidence-to-decision trace, implementation-critical notes, non-authority items, `ENTRY-*` / `GAP-*` rows | API inventory, source authority, model mapping, implementation, testing | ready / partial / blocked |
+| HANDOFF-002 | `docs/prototype-data-summary.md` | datasets, fields, Metric To Interface And Source Mapping, Mock API To HTTP API Replacement Matrix, component bindings, filters, interactions, API/model suggestions, `GAP-*` rows | API inventory, model mapping, implementation, testing | ready / partial / blocked |
+| HANDOFF-003 | `prd/execution/prd-data-api-contract.md` | API/data rows, request/response expectations, permission and state notes | API docs, backend design | ready / partial / blocked |
+| HANDOFF-004 | `prd/execution/prd-metric-dictionary-and-mounting.md` | metric definitions, formulas, units, mount locations, conclusion inputs | source/model mapping, numeric contract | ready / partial / blocked |
+| HANDOFF-005 | `prd/execution/prd-interaction-contract.md` | filter/action/drill/export/detail payloads | request params, query context, test cases | ready / partial / blocked |
+
+Targeted reading consumption:
+
+| Consumption ID | Source row | Reading row | Backend decision affected | Non-authority/uncertainty | Linked artifact | Status |
+| --- | --- | --- | --- | --- | --- | --- |
+| READ-CONSUME-001 | SRC-* | READ-* | API-*/LGM-*/RSP-*/SVC-*/ENV-* | none / ENTRY-* / GAP-* | HANDOFF-* / REPL-* / MAP-* | ready / partial / blocked |
 
 ## 3. 服务边界与分层架构
 
@@ -105,6 +122,22 @@ Every data-bearing endpoint must construct a query context before reading busine
 | API ID | Family | Endpoint | Consumer | Service mapping | Request model | Response envelope | Runtime policy | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | API-001 | metadata / filter / query / dashboard / detail / export / action / health |  | page/component/service | controller -> service -> planner -> repository -> formatter | QueryContext/PageRequest/ExportRequest | Page<T>/OptionItem/KpiCard/SeriesData/TaskStatus/Meta/Error | sync/cache/async/TBD | ready / partial / blocked |
+
+## 6A. Mock API To HTTP API Replacement Matrix
+
+Create this section whenever the backend consumes a prototype or mock-backed frontend.
+
+| Replacement ID | Mock endpoint/data source | Component/data key | Frontend consumer | Real API family/path | Request DTO/params | Response DTO/envelope | Service method | Source/model dependency | Filter/interaction/conclusion impact | Permission/cache/error notes | Status |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| REPL-001 | `/api/report/*` / `dashboard.dataset.json` / TBD |  | page/block/slot |  |  |  |  | SRC-*/LGM-* | filters / drilldown / export / RULE-* |  | ready / partial / blocked |
+
+Rules:
+
+- Every row should link a targeted reading row when PRD/prototype output is the source authority.
+- Every affected mock endpoint, local dataset, component data key, filter option source, export/detail action, and conclusion-rule input needs a replacement row or a linked `GAP-*`.
+- Preserve component-ready response shape unless a versioned breaking change is documented.
+- Backend APIs should return business-defined KPI values, chart series, table rows, totals, ranks, pagination metadata, and conclusion-rule inputs; frontend adapters may normalize envelopes but must not compute business facts from unrelated broad rows.
+- JSON prototype data can be source evidence, but backend simulation uses SQLite, a real test database, or an authoritative upstream stub with query responsibility, indexes, and parameter coverage.
 
 Custom endpoint shapes require a reason:
 
@@ -289,3 +322,5 @@ End with handoff verdict:
 - testing integration handoff;
 - operations/release handoff;
 - exact blocker and next owner action.
+
+For prototype/PRD-derived backend work, the verdict cannot be `ready` unless targeted reading consumption, PRD execution consumption, prototype-data-summary freshness, replacement rows, and metric/source/interface mapping are all linked or blocked with explicit `ENTRY-*` / `GAP-*`.
