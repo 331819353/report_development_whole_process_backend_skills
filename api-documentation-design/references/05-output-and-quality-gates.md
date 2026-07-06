@@ -5,6 +5,7 @@
 - API documentation grouped by module, domain, page, resource, or service boundary.
 - Common conventions plus endpoint details.
 - Backend reuse pattern and common request/response model family for production-bound endpoints.
+- Minimal implementation mode for table-backed endpoints: table-content evidence, request-param-to-source-field mapping, query-only boundary, and derived/summary exceptions or gaps.
 - Response compatibility rules for source/table replacement: unchanged fields, additive fields, naming convention, deprecation/versioning, and compatibility notes.
 - Numeric display/precision contract for metric-bearing fields: value type, raw/display unit, scale, screen/tooltip/export precision, rounding, null/zero/denominator-zero, negative-zero, formula precision, and formatter owner.
 - Parameter-driven data-version, scope-filtering, snapshot role/reuse, and endpoint-dependency contract when snapshot/latest-period semantics exist.
@@ -22,10 +23,12 @@
 - Entry conflicts across requirements, API inventories, data/source models, frontend contracts, route code, OpenAPI snippets, and runtime samples are resolved or listed as `ENTRY-*`; unresolved `P0`/`P1` findings keep affected endpoints `partial` or `blocked`.
 - API design reasonableness is checked; unresolved `P0`/`P1` `DESIGN-*` findings keep affected endpoints `partial` or `blocked`.
 - Production-bound endpoints identify backend reuse pattern, reusable request model, reusable response envelope, and service-layer mapping, or explain why a custom shape is required.
+- Table-backed endpoints identify table-content evidence before implementation: row grain, keys, filter fields, representative samples, permission fields, result bounds, and gaps.
+- Client-visible filters are documented as request params mapped to source predicates; hidden UI/controller/application-memory filters keep the endpoint `partial` or `blocked`.
 - Request params cover required filters, drilldowns, pagination, sorting, exports, defaults, and invalid-param behavior.
 - Filter-bearing endpoints include data-completeness evidence before frontend binding: option data, row grain, fields, default/non-default examples, empty/no-permission examples when relevant, and resolver/API branch behavior.
 - Database-backed request params document SQL predicate shape, index support, and SQL pushdown scope for global/page-level filters; unresolved index or non-sargable filter behavior keeps the endpoint `partial` or `blocked`.
-- API docs state where global filters, component-internal filters, sorting, pagination, ranking, Top/Bottom, and aggregation execute. Page/API-level full-materialize-then-filter behavior keeps the endpoint `partial` or `blocked` unless it is a documented component-internal filter over already fetched component data, tiny static enum, or bounded lookup.
+- API docs state whether each table-backed endpoint is source-query-simple or a derived/summary exception. Source-query-simple docs must show query-only filtering/sorting/pagination and absence of hidden joins, aggregation, exact counts, totals, rankings, formulas, or broad processing. Page/API-level full-materialize-then-filter behavior keeps the endpoint `partial` or `blocked` unless it is a documented component-internal filter over already fetched component data, tiny static enum, bounded lookup, or approved derived/summary path with source-side execution.
 - Snapshot/latest-period API docs state shared data-version fields, classify the snapshot role, and prove that metrics/trends/rankings/tables/drilldowns/exports either validly reuse the declared snapshot or avoid undocumented dependency on frontend call order/controller memory.
 - Data-bearing endpoint docs show how data-version, business filters, and backend-injected permission/data scope become source-side predicates, upstream provider params, precompute lookup keys, declared snapshot reuse rules, or Redis/cache key segments. Response-only metadata does not satisfy this check.
 - Default-backend API documents include Python/Flask, connection-pool, and Redis/cache ownership, or a named override reason.

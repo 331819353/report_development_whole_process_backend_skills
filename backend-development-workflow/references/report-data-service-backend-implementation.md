@@ -26,6 +26,8 @@ report definition
 -> slow-report governance
 ```
 
+For interface implementation, the default is still minimal: inspect each involved table first, expose client-visible filters as request params, and retrieve source-aligned rows with projection, predicates, stable order, and pagination only. Do not add joins, aggregation, formulas, totals, rankings, exact counts, chart/KPI derivation, or broad in-memory reshaping to a simple table retrieval endpoint. Use `minimal-interface-implementation-principles.md` as the implementation gate; broader query-service features apply only when the contract explicitly needs a derived/precomputed/summary endpoint.
+
 Frontends choose report, dimension, metric, filter, sort, page, drilldown, and export options by stable codes. Frontends must not send raw SQL, table names, column expressions, arbitrary operators, or permission scope.
 
 API design should let this query-service chain be reused. A backend-friendly API declares the reuse pattern, common request model, common response envelope, and service-layer mapping before implementation starts.
@@ -51,6 +53,7 @@ Before API documentation or implementation, a production-bound report data servi
 | --- | --- |
 | Service boundary | owned APIs, consumers, upstream/downstream systems, source authority, out-of-scope work |
 | Layered architecture | controller, service/use-case, metadata, query planner, source adapter, formatter, cache/precompute, export, permission, operations |
+| Minimal interface gate | table-content understanding matrix, request-param-to-source-field mapping, query-only boundary, aggregation/processing exceptions |
 | Query context | client params, backend defaults, data-version params, backend-injected permission/data scope, guardrails, downstream predicate/key mapping |
 | API family mapping | metadata, filter, query, dashboard/snapshot, detail/drilldown, export, action, status/health families and shared models |
 | Source adapter mapping | source fields/formulas to response fields, units, precision, enum, null/default behavior, compatibility status |
@@ -97,7 +100,7 @@ For each production-bound or production-like report data service, document or im
 | Report metadata | Report definition, report type, dataset, dimensions, metrics, filters, sort fields, display/format metadata, cache policy, timeout, max rows, status, version, owner. |
 | Dataset contract | Table/view/API/file source, source authority, source owner, grain, freshness, quality status, source version, data-source type, SQL dialect, and source-specific limits. |
 | Query API | Query endpoint, metadata endpoint, filter-option endpoint, dashboard/widget endpoint when needed, async export endpoints, subscription/snapshot/admin endpoints when in scope. |
-| Query planner | Selected dimensions/metrics, filter tree, permission predicates, tenant predicates, pagination, sorting, Top N, aggregation, count strategy, query grade, and sync/async decision. |
+| Query planner | For simple table retrieval: selected source table, projected fields, filter tree, permission predicates, tenant predicates, pagination, stable sorting, query grade, and sync/async decision. Aggregation, Top N, totals, or count strategy require an explicit derived/summary endpoint decision. |
 | SQL/source query builder | Field/metric/operator/sort whitelist, parameter binding, SQL dialect adaptation, tenant/permission injection, generated optional predicates, and safe aliases. |
 | Permission model | Menu/report access, row-level data scope, field visibility/masking, export permission, tenant isolation, and no-permission response behavior. |
 | Parameter guardrails | Required filters, date-range limits, max dimensions, max metrics, max `IN` values, keyword length, default/max page size, max page depth, max export rows, and invalid-param errors. |
@@ -223,7 +226,8 @@ Metric expressions and column expressions must be owned by backend configuration
 - Use parameter binding for values. Never concatenate user values into SQL/source query strings.
 - Inject tenant and data-permission predicates on the backend, not from frontend-supplied scope.
 - Generate optional predicates according to the actual request. Avoid broad nullable-OR templates for high-volume endpoints.
-- Apply global filters, permission scope, sorting, pagination, Top/Bottom, grouping, aggregation, and counts at the source/provider/repository/precompute/cache stage, not after full materialization in application memory.
+- For minimal table retrieval endpoints, apply global filters, permission scope, sorting, and pagination at the source/provider/repository stage, and avoid grouping, aggregation, exact counts, Top/Bottom, formulas, or totals.
+- For explicitly approved derived/summary endpoints, apply grouping, aggregation, counts, Top/Bottom, and formulas at the source/provider/repository/precompute/cache stage, not after full materialization in application memory.
 - Apply `$performance-optimization` for database-backed endpoints and capture plan evidence for risky P0/high-volume queries.
 
 ## Parameter Guardrails
@@ -279,6 +283,8 @@ Every data-bearing route should build a query context before reading business da
 - validated guardrails: allowed values, max date range, max page size, max `IN` size, sortable/filterable whitelist, and invalid-param behavior.
 
 The query context must be passed into the repository/source/provider/precompute/cache layer. For database-backed endpoints, data-version, business filters, and permission scope map to SQL predicates or joins before aggregation, ranking, pagination, totals, and export. For precomputed or Redis-backed endpoints, the same values map to lookup keys or cache-key segments. Response metadata should echo the executed context; it must not be invented after an unscoped query.
+
+For minimal table retrieval endpoints, the repository/source query should stop after projection, predicates, stable order, and bounded pagination. If the response needs aggregation, ranking, totals, or formula fields, confirm that the source table already stores that grain or move the work into a named derived/summary/precompute design path with separate evidence.
 
 Cache keys for report results and dashboard widgets must include all dimensions that can change the response:
 
@@ -341,6 +347,8 @@ Data APIs should return data and metadata, not avoidable presentation compositio
 Server-owned text is acceptable only when it is part of a documented exception, such as error/no-permission messages, audit/legal/notification content, regulated explanation, or a governed/model-generated conclusion. When backend returns such text, also return structured evidence fields, variables, conclusion type, and status/confidence when applicable so frontend can still control styling and layout.
 
 Do not leave KPI formulas, ranking, grouping, chart-series derivation, permission filtering, or multi-component splitting as implicit frontend work unless the exception is small, bounded, and documented. Conversely, do not move frontend copywriting, visual emphasis, layout wording, or style-specific conclusion assembly into the data service merely to make the first version easier.
+
+For simple source-table interfaces, also do not move KPI formulas, ranking, grouping, chart-series derivation, totals, or summary-card creation into the backend implementation. Query the already-existing source-aligned table rows, or mark the aggregate need as a separate model/precompute/API design task.
 
 ## Export And Long-Running Work
 
@@ -445,6 +453,9 @@ Treat these as findings unless explicitly scoped to a tiny non-production demo:
 - Controller directly concatenates SQL or implements the full query chain.
 - A new route/controller/DTO is created for every KPI/chart/table even though the metadata/filter/query/export/action family would fit.
 - Frontend sends SQL, table names, column expressions, raw operators, or permission scope.
+- Interface implementation starts before table content, row grain, keys, filter fields, and representative sample rows are inspected.
+- Client-visible filters are hardcoded, inferred from UI defaults, or held in controller/application memory instead of request params mapped to source predicates.
+- A simple table retrieval endpoint contains `GROUP BY`, `HAVING`, aggregate/window functions, exact total counts, multi-table synthesis, or service-level totals/rates/rankings without an approved derived/summary contract.
 - Every report is a one-off controller with duplicated metric/filter/permission logic.
 - All reports, exports, scheduled jobs, and heavy queries run synchronously in the default request pool.
 - No required time/scope filter, unbounded page size, unbounded export, or unlimited `IN` list.
@@ -467,7 +478,7 @@ Mark report data-service backend readiness:
 
 - `ready`: metadata, parameter-driven query context, query chain, snapshot role/reuse rule, data-version context, permissions, parameter guardrails, source mapping, API/result contract, cache/export, audit, freshness/quality, SQL strategy, performance/resilience, environment, and production handoff decisions are confirmed, documented or implemented, and testable for the stated scope.
 - `partial`: local/demo/test scope can proceed with named limitations, or production scope lacks non-blocking controls such as complete monitoring, warmup, snapshot, subscription, or slow-report governance.
-- `blocked`: the service would accept unsafe SQL/source inputs, has unknown source authority or metric口径, relies on undocumented data-bearing endpoint-to-endpoint runtime dependencies, lacks data-version context or snapshot reuse rules for snapshot/latest-period semantics, cannot show how data-version/business/permission scope params constrain source/precompute/cache/snapshot queries, lacks permission/tenant isolation, lacks bounded pagination/export, keeps risky heavy work synchronous, has no cache-permission safety, lacks required audit for sensitive data, or cannot document how global filters/query limits execute before response construction.
+- `blocked`: the service would accept unsafe SQL/source inputs, has unknown source authority or metric口径, implements table-backed interfaces without table-content evidence, hides client-visible filters outside request params, performs unapproved aggregation/processing in simple retrieval endpoints, relies on undocumented data-bearing endpoint-to-endpoint runtime dependencies, lacks data-version context or snapshot reuse rules for snapshot/latest-period semantics, cannot show how data-version/business/permission scope params constrain source/precompute/cache/snapshot queries, lacks permission/tenant isolation, lacks bounded pagination/export, keeps risky heavy work synchronous, has no cache-permission safety, lacks required audit for sensitive data, or cannot document how global filters/query limits execute before response construction.
 
 ## Handoff Evidence
 
@@ -475,6 +486,7 @@ Backend/API documentation, implementation notes, and validation reports should i
 
 - Upstream technical-solution linkage: consumed `ARC-*`, `ADR-*`, `API-*`, `LGM-*`, `NFR-*`, `GAP-*`, and any divergence from them.
 - Data-service boundary and layered architecture: controller, service/use-case, metadata, query planner, source adapter, formatter, cache/precompute, export, permission, observability, and runtime ownership.
+- Minimal interface evidence: table-content understanding matrix, request-param-to-source-field mapping, query-only route/repository proof, and any approved derived/summary exception.
 - Report type and execution strategy.
 - Backend API family/reuse pattern for each endpoint.
 - Metadata model or explicit reason why a fixed endpoint is acceptable.

@@ -37,9 +37,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 5. Define unified API behavior: `ApiResponse<T>`, HTTP status plus business code, `BizException`, `GlobalExceptionHandler`, validation exception handling, empty/error states, and no internal stack traces in frontend responses.
 6. Define auth/security behavior when protected APIs are in scope: `Authorization: Bearer <token>` or `Access-Token`, `JwtAuthenticationFilter`/SSO filter, `SecurityConfig`, whitelist routes, stateless session policy, local user/role mapping, 401 token-invalid behavior, and 403 permission-denied behavior. When Haier IAM/IAMA is in scope, load `$haier-sso-integration` and keep `clientId`/`Application-Key` server-side.
 7. Define environment/profile behavior: `application.yml`, `application-dev.yml`, `application-test.yml`, `application-prod.yml`, env-var based secrets, `SPRING_PROFILES_ACTIVE`, datasource/Redis settings, and production secret redaction.
-8. If implementation is requested, edit code through `$code-change-ledger-management`, preserve project patterns, and add/update tests when behavior changes.
-9. Run available Maven/Gradle build, tests, package, startup, and `$runtime-url-smoke-test` when a URL is produced.
-10. Route API contract, data adapter, numeric display, Redis/cache, SQL performance, deployment readiness, and production observability to the owning skills when the task exceeds Spring Boot architecture baseline.
+8. Apply minimal interface implementation before controller/service/mapper edits: inspect table content, make client-visible filters request DTO/query params, map them to source predicates, and keep simple table retrieval query-only without hidden joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory processing.
+9. If implementation is requested, edit code through `$code-change-ledger-management`, preserve project patterns, and add/update tests when behavior changes.
+10. Run available Maven/Gradle build, tests, package, startup, and `$runtime-url-smoke-test` when a URL is produced.
+11. Route API contract, data adapter, numeric display, Redis/cache, SQL performance, deployment readiness, and production observability to the owning skills when the task exceeds Spring Boot architecture baseline.
 
 ## Required Output
 
@@ -49,6 +50,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - REST API and response/exception contract: `ApiResponse<T>`, `BizException`, validation handling, HTTP/business codes, and frontend-visible error behavior.
 - Security/JWT/SSO plan when applicable: `SecurityConfig`, filter chain, token header, whitelist, IAM/IAMA token check or local JWT bridge, server-side `clientId`/`Application-Key`, 401/403 behavior, and redaction.
 - Data access plan: MyBatis/MyBatis-Plus mapper XML or JPA repository, entity/DTO/VO/converter boundaries, transactions, pagination/export when applicable.
+- Minimal interface proof: table-content evidence, request-param-to-source-field mapping, query-only mapper/repository boundary, and derived/summary exceptions or gaps.
 - Profile/config plan: dev/test/prod YAML, datasource/Redis/env vars, Maven/Gradle commands, Docker/Docker Compose when applicable.
 - Verification commands, runtime URL/smoke result when available, blockers, and readiness.
 
@@ -61,5 +63,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not make the browser provide authoritative `Application-Key`, `clientId`, client secret, or SSO credentials; Java backend must resolve those from server-side config or a trusted tenant/app registry.
 - Do not hardcode production datasource, Redis, JWT secret, or credentials in committed YAML.
 - Do not concatenate user-controlled values into SQL.
+- Do not implement table-backed APIs before inspecting table content and mapping filters as request params/source predicates.
+- Do not hide joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory processing inside Controller/Service/Mapper code for a simple source-query endpoint.
 - Do not mark implementation ready without build/test/startup evidence or exact blockers.
 - Do not ignore existing project conventions; use this baseline only when the project has no stronger local standard.

@@ -8,6 +8,8 @@ Use this reference when writing each endpoint section.
 - Business module, resource, page, or service:
 - Served component or component group:
 - Backend reuse pattern:
+- Minimal implementation mode:
+- Table-content evidence:
 - Purpose and trigger:
 - Method and path:
 - Auth and permission:
@@ -17,6 +19,7 @@ Use this reference when writing each endpoint section.
 - Response envelope/model family:
 - Response schema:
 - Data/model/source trace:
+- Request-param-to-source-field mapping:
 - Snapshot role/reuse rule:
 - Data-version context:
 - Backend query binding:
@@ -25,6 +28,7 @@ Use this reference when writing each endpoint section.
 - Service-layer mapping:
 - Backend stack and resource model:
 - Transformation rules:
+- Query-only boundary and derived/summary exceptions:
 - Filter/sort/page execution stage:
 - Global filter SQL `WHERE` rules:
 - SQL query-writing strategy:
@@ -76,6 +80,7 @@ For each parameter, document:
 - Name, location, type, required status, default, allowed values, example, and description.
 - Validation rule and invalid-param error behavior.
 - Filter semantics such as inclusive/exclusive date range, timezone, fuzzy search, multi-select, hierarchy selection, and permission-scoped defaults.
+- Whether the parameter is client-supplied, backend-defaulted, or backend-injected permission/data scope.
 - Filter scope: mark each filter as `global/page-level`, `permission-scope`, `route/drilldown`, or `component-internal`. Global/page-level and permission filters for database-backed endpoints must map to SQL `WHERE` predicates or an equivalent source/provider query. Component-internal filters may operate on the already fetched component dataset when the dataset is bounded by the endpoint contract.
 - Database query mapping when the source is database-backed: source column, predicate shape, whether it uses a normal/composite/function/full-text index, type consistency, date/range rewrite, optional-filter generation behavior, and any known non-sargable condition.
 - Execution stage: whether each filter, sort, pagination, ranking, Top/Bottom, grouping, aggregation, and count is handled by source query, repository query, upstream provider, precompute/cache, or an explicitly bounded client/service post-process.
@@ -86,6 +91,8 @@ For each parameter, document:
 - For report/BI/dashboard endpoints, document report type, report metadata or fixed-contract source, dimension/metric/filter/sort whitelist source, backend-owned SQL/source expression mapping, parameter guardrails, backend-injected tenant/data/field/export permission behavior, cache key permission safety, result freshness/quality metadata, query/export audit behavior, and slow-report governance expectation.
 - For snapshot/latest-period reports, document whether the endpoint accepts, defaults, injects, or returns `snapshotDate`, `latestPeriod`, `loadBatch`, `dataVersion`, report version, or source version. A data-bearing endpoint must identify whether it queries its own source/logical/precompute/cache source or derives from a declared canonical/shared snapshot.
 - For every data-bearing endpoint, map data-version fields, business filters, route/drilldown params, pagination/sort params, and backend-injected permission/data-scope values to source predicates, upstream provider params, precompute lookup keys, or Redis/cache key segments.
+
+For source-query-simple endpoints, every client-visible filter that changes returned rows must be listed as a request parameter. Do not document UI-only filters, hidden controller defaults, previous endpoint state, or application memory as the filtering mechanism.
 
 ## Response Schema
 
@@ -106,6 +113,8 @@ When the endpoint uses or may later use a different source table/view/upstream/f
 At response-envelope level, document whether the endpoint uses `Page<T>`, `OptionItem[]`, `KpiCard[]`, `SeriesData`, `TaskStatus`, `ColumnMeta[]`, `Meta`, or a custom envelope. Custom envelopes need a reason so backend serializers and tests do not fragment unnecessarily.
 
 For report/dashboard APIs, document the component-facing view model. Do not leave required component formulas, grouping, ranking, filtering, or chart/table series derivation as implicit frontend work unless the exception is bounded and listed as partial.
+
+For source-query-simple APIs, response schema should stay source-aligned: rows, fields, aliases, null behavior, permissions, and pagination/sort metadata. Aggregates, exact totals, rankings, formula fields, chart series, KPI cards, and summary text require either an existing source-aligned table at that grain or a documented derived/summary/precompute exception.
 
 For data-bearing APIs, keep presentation composition flexible. Prefer fields such as `value`, `unit`, `precision`, `delta`, `trendDirection`, `thresholdLevel`, `reasonCode`, `messageKey`, and `messageParams` over preassembled sentences. If the backend returns conclusion text because it is governed, model-produced, audit-bound, or legally required, also document the conclusion type, source, variables/evidence fields, status/confidence when applicable, and why frontend composition is not sufficient.
 
@@ -144,6 +153,8 @@ Do not mark production-bound endpoints `ready` when the backend reuse pattern, r
 
 Do not mark endpoints `ready` when the documented or implemented path builds or loads a complete candidate dataset/component payload and then applies global filters, permission scope, sorting, pagination, ranking, Top/Bottom, grouping, aggregation, or count logic afterward. Treat page/API-level full-materialize-then-filter as a performance and correctness blocker except for documented component-internal filters over already fetched component data, tiny static enums, or bounded lookup sets.
 
+Do not mark source-query-simple endpoints `ready` when the API doc implies hidden joins, `GROUP BY`, aggregate/window functions, exact total counts, totals, rankings, formulas, chart/KPI derivation, or broad service-side collection processing. Query an existing source-aligned summary table or record a derived/summary/precompute gap instead.
+
 Do not mark snapshot/latest-period endpoint groups `ready` when metrics, trends, rankings, tables, drilldowns, or exports depend on an undocumented `/snapshot` payload, frontend call order, or application-memory payload. The correct dependency is either a declared canonical/shared snapshot with matching grain/scope/version or a shared data-version context plus request/defaulted/injected params that filter a shared source/logical/precompute/cache layer.
 
 Do not mark data-bearing endpoints `ready` when the document only echoes version/scope values in response metadata but does not show how those values constrain source-side filtering, upstream provider calls, precompute lookup, or cache keys.
@@ -152,7 +163,7 @@ Component-internal local filtering is allowed only when the endpoint has already
 
 For database-backed endpoints, also document:
 
-- Whether filtering, sorting, pagination, aggregation, joins, Top/Bottom, and counts are pushed down to SQL/database views/repository queries.
+- Whether the endpoint is source-query-simple or a derived/summary exception. For source-query-simple, document filtering, sorting, and pagination pushdown and the absence of aggregation/joins/Top/Bottom/exact counts/formulas. For derived/summary exceptions, document where aggregation, joins, Top/Bottom, and counts are pushed down.
 - Selected-column/projection rule, including explicit avoidance of `SELECT *` for list/table/chart APIs.
 - Which filters are global SQL `WHERE` predicates and which are component-internal local filters over already fetched component data.
 - Which request filters map to direct indexed predicates such as `field = ?`, `field IN (...)`, or `field >= ? AND field < ?`.

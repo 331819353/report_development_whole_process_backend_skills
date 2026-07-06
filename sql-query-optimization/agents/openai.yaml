@@ -1,4 +1,4 @@
 interface:
   display_name: "SQL查询优化"
-  short_description: "优化SQL查询写法、索引友好条件、JOIN、聚合、分页排序、TopN、count和执行计划风险。"
-  default_prompt: "Use $sql-query-optimization for slow SQL, index-friendly predicates, joins, aggregation, sorting, pagination, count strategy, execution-plan risk, parameter binding, and database-backed query correctness."
+  short_description: "优化SQL查询写法、索引友好条件、最简查询、分页排序和执行计划风险；JOIN、聚合、TopN、count仅作为明确例外处理。"
+  default_prompt: "Use $sql-query-optimization for database-backed query correctness, source-query-simple boundaries, table-content evidence, request-param predicates, index-friendly filtering, sorting, pagination, execution-plan risk, and parameter binding. Treat joins, aggregation, exact counts, TopN, formulas, totals, and rankings as derived/summary exceptions requiring explicit evidence."

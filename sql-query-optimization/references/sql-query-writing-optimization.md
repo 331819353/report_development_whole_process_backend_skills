@@ -6,6 +6,8 @@ Scope: SQL writing and query-shape optimization only. Index creation, table desi
 
 Core principle: read fewer rows, read fewer columns, do less sorting/grouping, and avoid large intermediate result sets.
 
+For minimal interface implementation, the preferred query shape is even narrower: inspect the table content first, then run a bounded source-aligned row query with explicit projection, request-param predicates, backend-injected scope predicates, stable order, and pagination. Do not add joins, aggregation, exact counts, windows, formulas, totals, rankings, or broad in-memory post-processing unless the endpoint has an approved derived/summary/precompute contract.
+
 ## Required Query Decisions
 
 For every production-bound or high-volume database-backed endpoint, record these decisions or mark them as gaps.
@@ -14,6 +16,8 @@ For every production-bound or high-volume database-backed endpoint, record these
 | --- | --- |
 | Projection | Returned columns, excluded large columns, and whether `SELECT *` is avoided. |
 | Predicate shape | Direct column predicates, date/range rewrite, type-consistent parameters, and whether predicates are sargable. |
+| Filter params | Request param name, source field, operator, default/required behavior, and whether scope is backend-injected. |
+| Table content evidence | Inspected schema, row grain, keys, filter fields, sample rows, permission fields, row volume, and gaps. |
 | Join shape | Join keys, tenant/permission keys, one-to-many cardinality, aggregation-before-join need, and Cartesian-product prevention. |
 | Dedup/order | Whether `DISTINCT`, `ORDER BY`, `UNION`, or random sort is really required. |
 | Pagination | Default/max page size, stable sort, total-count strategy, and cursor/keyset need for deep pages. |
@@ -25,6 +29,7 @@ For every production-bound or high-volume database-backed endpoint, record these
 
 - Do not use `SELECT *` for API queries.
 - Select only fields needed by the response model, sorting, filtering, grouping, or permission checks.
+- For source-query-simple APIs, select only response fields, filter/sort/page anchor fields, and permission fields needed by the query; do not project source columns just because they may be useful later.
 - Avoid loading large text, JSON, blob, or remark columns unless the endpoint explicitly returns them.
 - For list/table APIs, separate summary/list queries from detail queries when large columns are needed only after drilldown.
 
@@ -40,6 +45,8 @@ For every production-bound or high-volume database-backed endpoint, record these
 
 ## Join Rules
 
+- Do not join by default for source-query-simple APIs. Prefer one authoritative table/view/fixture/upstream object that already contains the required fields.
+- Use joins only when table-content evidence exists for every table, join keys/cardinality are known, permission scope is safe on every side, and the endpoint remains query-only.
 - Join after filtering whenever semantics and the execution plan allow it.
 - Always document complete join conditions, including tenant, organization, partition, effective-date, and composite-key fields when applicable.
 - Prevent Cartesian products. Any join without a complete `ON` condition is a blocker.
@@ -68,6 +75,8 @@ For every production-bound or high-volume database-backed endpoint, record these
 
 ## Aggregation And Window Rules
 
+- Do not use aggregation or window functions for source-query-simple APIs.
+- If the UI needs aggregate, ranking, total, Top/Bottom, or formula output, first query an existing source-aligned table at that grain or record a derived/summary/precompute `GAP-*`.
 - Filter rows in `WHERE` before aggregation; use `HAVING` only for aggregate conditions.
 - Group by the minimal set of columns needed by the response grain.
 - Filter before window functions when the filter is semantically independent from the window result.
@@ -85,6 +94,8 @@ For every production-bound or high-volume database-backed endpoint, record these
 
 Use the database's plan tool, such as `EXPLAIN` or `EXPLAIN ANALYZE`, for important or risky queries. Check:
 
+- Table-content evidence exists before query review.
+- Client-visible filters appear as request params and source predicates.
 - Scanned rows vs returned rows.
 - Access method: index seek/range scan vs full scan.
 - Join order and join type.
@@ -98,6 +109,9 @@ Use the database's plan tool, such as `EXPLAIN` or `EXPLAIN ANALYZE`, for import
 Mark the endpoint/query `partial` or `blocked` when any red flag affects production-bound behavior and no accepted mitigation is documented.
 
 - `SELECT *` in a list/table/chart API.
+- Source-query-simple API without table-content evidence.
+- Client-visible filter hidden outside request params or not mapped to a source predicate.
+- Unapproved `JOIN`, `GROUP BY`, `HAVING`, aggregate/window function, exact total count, formula, total, ranking, or Top/Bottom in a simple retrieval endpoint.
 - Global filters applied after loading broad rows into application memory.
 - Functions, casts, or arithmetic on high-cardinality filtered/joined columns.
 - Leading-wildcard search on large tables without search-index support.
@@ -113,10 +127,12 @@ Mark the endpoint/query `partial` or `blocked` when any red flag affects product
 ## Handoff Checklist
 
 - Query purpose and response grain are clear.
+- Minimal implementation mode is clear: source-query-simple or derived/summary exception.
+- Table-content evidence and filter-param mapping are recorded.
 - Projection lists only necessary fields.
 - Filters are source-side, sargable, type-consistent, and permission-aware.
-- Joins have complete keys and understood cardinality.
-- Aggregation, ranking, pagination, and Top N execute before response construction.
+- Joins have complete keys and understood cardinality when an approved exception needs them.
+- For source-query-simple APIs, pagination executes before response construction and aggregation/ranking/Top N are absent. For approved derived/summary endpoints, aggregation, ranking, pagination, and Top N execute before response construction.
 - Expensive optional filters are generated only when requested.
 - Total-count, export, and deep-page behavior are explicitly bounded.
 - Plan evidence or slow-query risk is recorded for P0/high-volume endpoints.

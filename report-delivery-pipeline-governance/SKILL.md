@@ -34,14 +34,16 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 2. Map the stage to required handoff artifacts and owning skills.
 3. For PRD/prototype-derived work, inventory targeted reading rows, consumed PRD execution files, `docs/prototype-data-summary.md`, component data keys, replacement rows, metric/source/interface rows, filters, actions, exports, details, conclusion inputs, and open `ENTRY-*` / `GAP-*`.
 4. Check that stable IDs, versions, sources, gaps, evidence, code ledgers, environment profiles, and readiness values link across stages.
-5. Route missing or conflicting work to the owning skill instead of absorbing implementation details.
-6. Return a stage verdict and next-stage entry criteria.
+5. When backend/API implementation is in the path, check minimal interface evidence: table-content understanding, filters as request params mapped to source predicates, source-query-simple query-only boundary, and derived/summary exceptions or gaps.
+6. Route missing or conflicting work to the owning skill instead of absorbing implementation details.
+7. Return a stage verdict and next-stage entry criteria.
 
 ## Required Output
 
 - Current stage and target next stage.
 - Required upstream/downstream artifacts and missing pieces.
 - Targeted reading / PRD / data-summary consumption matrix when applicable.
+- Minimal interface implementation evidence when backend/API work is in scope.
 - Owning skill routing for each gap or blocker.
 - Readiness: `ready`, `partial`, or `blocked`.
 - Next-stage handoff requirements.
@@ -50,4 +52,5 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 - Do not mark a stage ready when required upstream contracts, evidence, versions, profile decisions, code ledgers, or test results are missing.
 - Do not mark a downstream stage ready for PRD/prototype-derived work when targeted reading rows, the PRD execution bundle, `docs/prototype-data-summary.md`, replacement rows, component data keys, metric/source/interface mappings, filter/action/export/detail/conclusion ownership, or downstream version evidence is missing or stale.
+- Do not mark backend/API handoff ready when table-backed interfaces lack table-content evidence, client-visible filters are not request params mapped to source predicates, or simple retrieval endpoints hide joins, aggregation, exact counts, formulas, totals, rankings, or broad processing.
 - Do not let a later-stage implementation silently redefine requirement, metric, API, source, permission, or test contracts.

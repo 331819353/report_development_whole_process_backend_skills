@@ -13,7 +13,9 @@ Use this copy only inside the backend/data-service skill bundle. Treat frontend,
 
 ## Positioning
 
-Use this skill for SQL/query-shape optimization and database-backed report/API query review. It owns predicate shape, projection, joins, aggregation, pagination, sort, count, plan evidence, and safe parameter binding.
+Use this skill for SQL/query-shape optimization and database-backed report/API query review. It owns predicate shape, projection, minimal source-query boundaries, joins/aggregation exception checks, pagination, sort, count, plan evidence, and safe parameter binding.
+
+For interface implementation, default to source-query-simple: inspect table content first, map request params to predicates, query selected rows, and avoid joins, aggregation, exact counts, formulas, totals, rankings, and broad post-processing unless a derived/summary exception is documented.
 
 Use `$performance-optimization` when the performance surface also includes API design, cache, export, frontend rendering, capacity, or end-to-end verification.
 
@@ -27,15 +29,17 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 ## Workflow
 
-1. Identify database/dialect, query purpose, result grain, filters, sort, pagination, volume, and SLA.
-2. Inspect SQL/query builder shape and available plan evidence.
-3. Optimize selected columns, predicates, joins, aggregation/window placement, sort/page strategy, and optional filter handling.
-4. Preserve metric formulas, permission predicates, source-side filtering, and response compatibility.
-5. Define verification: `EXPLAIN`, query timing, row counts, before/after plan, and correctness checks.
+1. Identify database/dialect, query purpose, result grain, source table(s), filters, sort, pagination, volume, and SLA.
+2. Inspect table-content evidence, request-param-to-source-field mapping, SQL/query builder shape, and available plan evidence.
+3. For source-query-simple APIs, optimize selected columns, predicates, stable sorting, pagination, and optional filter handling while keeping aggregation/join/formula work absent.
+4. For approved derived/summary endpoints, optimize joins, aggregation/window placement, Top/Bottom, count strategy, and precompute/source-table choices.
+5. Preserve metric formulas, permission predicates, source-side filtering, and response compatibility.
+6. Define verification: table evidence, `EXPLAIN`, query timing, row counts, before/after plan, and correctness checks.
 
 ## Required Output
 
 - Query surface and bottleneck hypothesis.
+- Minimal implementation mode, table-content evidence, and request-param-to-source-field mapping.
 - SQL/query rewrite or review findings.
 - Index/predicate/page/sort/aggregation notes.
 - Correctness and permission-scope risks.
@@ -44,5 +48,6 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not optimize by changing metric口径, permission scope, business totals, filters, or response semantics.
+- Do not approve a source-query-simple API that uses hidden filters, uninspected tables, joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory post-processing.
 - Do not fetch broad result sets and filter/sort/page globally in memory for database-backed data.
 - Use parameter binding and whitelisted fields; never concatenate user-controlled SQL.

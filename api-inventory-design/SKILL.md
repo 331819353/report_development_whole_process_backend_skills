@@ -39,6 +39,7 @@ Read only the reference files needed for the current task:
 | Design APIs that make backend implementation simple, efficient, and reusable | `references/05-backend-friendly-api-design.md` |
 | Run API traceability, status, no-invention, and gap-linking checks | `references/04-api-stability-gate.md` |
 | Required output columns, hard constraints, and final quality gate | `references/06-inventory-output-and-gates.md` |
+| Keep interface implementation minimal: filters as params, table-content evidence first, query-only source retrieval | `$backend-development-workflow` `references/minimal-interface-implementation-principles.md` |
 | Metric number display contract for response fields | `$metric-number-display-contract` |
 | SQL/query feasibility for database-backed APIs | `$sql-query-optimization` |
 | Redis/cache/precompute API behavior | `$redis-cache-design-patterns` |
@@ -66,6 +67,9 @@ For PRD/prototype-derived report work, read `prd/execution/prd-targeted-reading-
    When multiple artifacts influence the inventory, identify which source owns business scope, visible UI needs, existing API behavior, source model facts, and testing evidence. If artifacts conflict on endpoint scope, request params, response fields, metric grain, permission, or API availability, record `ENTRY-*` findings instead of silently choosing one.
    For prototype-derived report work, the PRD execution bundle owns report type, page/block/slot/component decisions, interaction behavior, metric definitions, and visible acceptance; `docs/prototype-data-summary.md` owns mock endpoints, local datasets, data keys, and replacement expectations. Do not rebuild API scope from screenshots or final DOM when these files exist.
 
+0a. Apply minimal interface planning.
+   For every table-backed or mock-to-real API candidate, inspect or require table-content evidence before interface planning: physical table/view/fixture/upstream object, row grain, keys, filter fields, representative rows, permission fields, result bounds, and gaps. Mark `GAP-*` when the inventory cannot show what each involved table contains.
+
 1. Build page and module coverage.
    List every page, tab, card, chart, table, drawer, export, drilldown, filter option, and action that needs data.
    Include every component data key, slot, filter surface, toolbar action, export, detail/drilldown trigger, and conclusion-rule input named in the prototype data summary or PRD execution files.
@@ -76,18 +80,23 @@ For PRD/prototype-derived report work, read `prd/execution/prd-targeted-reading-
 3. Define endpoint candidates.
    For each API, state method, path, page/module, purpose, trigger, request source, response model, source model dependency, auth need, cache/performance/SLA expectation, priority, and status.
    For each API candidate derived from prototype/mock data, include the replacement-matrix row id, original mock endpoint or local dataset, component data key, consuming slot/component, and whether the endpoint provides metric inputs, filter options, action result, export payload, detail payload, or conclusion-rule inputs.
+   Default implementation type for table-backed candidates is `source-query-simple`: one authoritative table/view/fixture/upstream object, explicit projection, request-param predicates, backend-injected permission scope, stable order, bounded pagination, and no hidden joins, aggregation, totals, exact counts, formulas, rankings, or in-memory reshaping.
 
 3a. Assign backend reuse patterns.
    For every production-bound or repeated endpoint, classify the backend implementation family: `metadata`, `filter-options`, `query`, `dashboard/snapshot`, `export`, `action`, or `health/status`. Record which common request model, response envelope, query context, permission service, cache/precompute family, pagination/export flow, or formatter can be reused. Mark `DESIGN-*` when an endpoint would require a one-off controller/query without a clear reason.
 
 4. Define request contracts at inventory level.
    Capture path/query/body params, filters, period format, organization scope, pagination, sorting, keyword search, drilldown params, export params, and default values. Separate client-supplied params from backend-defaulted params and backend-injected permission/data-scope params.
+   Every client-visible filter that changes returned rows must be a request param with source field, operator, allowed/default value, and invalid-param behavior. Do not hide filters as UI-only state, controller defaults, previous endpoint state, or application memory.
 
 5. Define data-version and endpoint dependency contracts.
    When a report has snapshot/latest-period semantics, first classify the snapshot role: overview-only payload, canonical/shared snapshot dataset, reusable response for a bounded component group, or local/demo artifact. State which endpoint or metadata source exposes `snapshotDate`, `latestPeriod`, `loadBatch`, `dataVersion`, or equivalent fields, and require every related snapshot, metrics, trend, ranking, table, export, and health API to consume the applicable data-version and scope values as backend query context or to explicitly reuse the declared snapshot dataset. Define whether each value is client-supplied, backend-defaulted, or backend-injected from auth/permission. Do not leave metrics/trend/table dependency on `/snapshot`, controller-level memory, or previous frontend call order implicit. Each data-bearing API must either filter its own source/logical model, repository query, precompute table, or Redis key with the shared version context and correct business/permission scope, or document that it derives from the canonical snapshot and why the grain/scope/version match.
 
 6. Define filter data support at inventory level.
    Before marking filter-bearing APIs ready for downstream implementation, capture option source, source/provider execution stage, required fields, row grain, default state, non-default state, empty/no-permission state when relevant, and resolver/API branch need. Record a `GAP-*` when the planned API can only produce one default snapshot for an affecting filter.
+
+6a. Define aggregation/processing exceptions.
+   If the consuming page needs aggregate, ranking, total, formula, chart-series, or summary-card data, first check whether an existing source table already stores that grain. If yes, model the API as a simple query against that source-aligned table. If no, mark a derived/summary/precompute `GAP-*` or route to data-model/precompute design; do not make a simple interface inventory row imply hidden aggregation.
 
 7. Define response contracts at inventory level.
    Reference a response model name and summarize required field groups, grain, list/envelope shape, empty state, and error behavior. Do not duplicate the full API document here.

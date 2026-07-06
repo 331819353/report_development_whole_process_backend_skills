@@ -2,6 +2,8 @@
 
 Use this reference for time normalization, aggregation, formulas, sorting, ranking, and reconciliation.
 
+Do not load this reference as the default path for simple interface implementation. For source-query-simple APIs, table retrieval remains projection + predicates + stable order + pagination. Use this reference only when the user/API contract explicitly needs a derived/summary/precompute endpoint, or when an existing source table already stores the aggregated grain and the interface only queries it.
+
 ## Time And Period Rules
 
 - Define input format, output format, timezone, locale, and calendar/fiscal calendar.
@@ -12,6 +14,8 @@ Use this reference for time normalization, aggregation, formulas, sorting, ranki
 
 ## Aggregation Rules
 
+- Confirm the endpoint is an approved derived/summary exception before writing aggregation rules.
+- If no source table already contains the requested grain, record a model/precompute `GAP-*` instead of implementing aggregation in a simple interface.
 - Define group keys and output grain.
 - Define aggregation method for each measure: sum, count, distinct count, min, max, average, weighted average, last value, first value, median, percentile, or custom formula.
 - Define denominator rules for rates and ratios.
@@ -26,6 +30,8 @@ Document formulas for:
 - Completion, gap, rate, ratio, contribution, YoY, MoM, CAGR, score, rating, risk level, overdue days, aging bucket, DSO, DIO, SLA status, and other derived fields.
 - Precision, rounding mode, percentage scaling, unit conversion, and display unit.
 - Error behavior for divide-by-zero, missing denominator, negative values, and inconsistent source rows.
+
+Do not invent these formulas inside route handlers, serializers, frontend adapters, or repository post-processing only to satisfy a first version of an interface.
 
 ## Reconciliation
 

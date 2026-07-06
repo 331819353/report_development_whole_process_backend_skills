@@ -12,6 +12,8 @@ Use this reference for detailed contract checks.
 - Empty-state shape, no-data shape, no-permission-scoped shape, and omitted-field behavior.
 - Derived fields, aggregation values, totals, subtotals, and reconciliation with detail rows.
 
+For source-query-simple APIs, response checks should prove that derived fields, aggregation values, totals, subtotals, rankings, formulas, or chart/KPI derivation are absent unless an approved derived/summary exception exists.
+
 ## Source Replacement Compatibility Checks
 
 Run these checks whenever backend implementation changes the data source, source table/view, upstream API, SQLite fixture schema, precompute table, or serving model:
@@ -30,6 +32,7 @@ Run these checks whenever backend implementation changes the data source, source
 - Stable default sort and cursor/keyset need for high-volume or deep-scroll result sets.
 - Sorting syntax, default sort, allowed fields, stable ordering, and invalid sort behavior.
 - Filter names, date-range inclusivity, timezone, hierarchy filters, search behavior, and permission-scoped defaults.
+- Every client-visible filter that changes returned rows is a path/query/body request param, not UI-only state, controller memory, previous endpoint state, or hardcoded service default.
 - For database-backed endpoints, each filter's source field, SQL predicate shape, and index support.
 - Global/page-level filters and permission-scope filters must be visible as SQL `WHERE` predicates or equivalent source/provider query params; component-internal filters must be explicitly local to already fetched component data.
 - Upload/download content types, filenames, streaming behavior, and export limits.
@@ -43,6 +46,7 @@ Run these checks whenever backend implementation changes the data source, source
 
 ## Performance Checks
 
+- Table-content evidence for every source object before implementation: row grain, keys, filter fields, representative samples, permission fields, result bounds, and gaps.
 - Default and maximum page size.
 - Stable sort, total-count strategy, cursor/keyset need, and out-of-range page behavior.
 - Export row/file limits.
@@ -51,7 +55,7 @@ Run these checks whenever backend implementation changes the data source, source
 - Redis/cache assumptions when used: cache key dimensions, TTL, invalidation, permission/tenant safety, stampede protection, and fallback.
 - Database connection-pool behavior for database-backed runtime: pooled connection reuse, max size, acquire timeout, idle timeout, validation/health behavior, and safe shutdown.
 - Large result handling and known expensive filters or joins.
-- SQL pushdown for database-backed endpoints: filtering, sorting, pagination, joins, grouping, aggregation, Top/Bottom, and counts should be performed by database queries rather than broad in-memory calculation.
-- Flag page/API-level full-materialize-then-filter behavior when an implementation builds or loads a complete candidate dataset/component payload and then applies global filters, permission scope, sorting, pagination, ranking, grouping, aggregation, or counts. This is a fail/partial finding unless the behavior is a documented component-internal filter over already fetched component data, tiny static enum, or bounded lookup.
+- SQL pushdown for source-query-simple endpoints: filtering, sorting, pagination, and permission scope should be performed by database/source queries rather than broad in-memory calculation. Joins, grouping, aggregation, Top/Bottom, exact counts, formulas, totals, and rankings should be absent unless an approved derived/summary exception exists.
+- Flag page/API-level full-materialize-then-filter behavior when an implementation builds or loads a complete candidate dataset/component payload and then applies global filters, permission scope, sorting, pagination, ranking, grouping, aggregation, or counts. This is a fail/partial finding unless the behavior is a documented component-internal filter over already fetched component data, tiny static enum, bounded lookup, or approved derived/summary path with source-side execution.
 - Index-friendly predicates for filters and sorts. Flag `FUNCTION(field) = ?`, `DATE(field) = ?`, `YEAR(field) = ?`, `TO_CHAR(field) = ?`, `LOWER(field) = ?`, arithmetic on indexed columns, leading-wildcard search, or unknown index support as performance findings unless a matching function/generated/full-text index or precompute path is documented.
 - Mock-derived backend/API implementations must query SQLite fixtures for local simulation. Flag JSON file reads, Python/JS arrays, or broad in-memory filtering as source/performance findings unless the user explicitly scoped the work outside backend/API implementation.

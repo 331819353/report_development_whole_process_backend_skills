@@ -17,6 +17,8 @@ Use this skill when source data, API response data, and UI view models do not na
 
 Backend transformation owns source-to-API correctness. Frontend adapter owns provider-payload-to-UI-model stability.
 
+For backend interface implementation, adapters are not a license to add hidden business logic. The default path is source-query-simple: understand the source table content, expose filters as request params, query rows only, and use adapters only for stable aliases, serialization, masking, null handling, and compatibility. Aggregation, formulas, totals, rankings, and broad reshaping require an explicit derived/summary/precompute contract or `GAP-*`.
+
 ## Reference Loading
 
 - Backend boundary, source-to-target mapping, required/default fields: `references/backend-boundary-and-mapping.md`
@@ -38,22 +40,25 @@ For PRD/prototype-derived report adapters, read `prd/execution/prd-targeted-read
 ## Workflow
 
 1. Identify source payload, target API contract, and UI/view model contract.
-2. Define grain, required fields, optional fields, defaults, null behavior, precision, units, numeric display contract, enum dictionaries, date/time formats, and locale labels.
-3. For metric-bearing fields, apply `$metric-number-display-contract`: keep raw numeric value, calculation value, display unit, display scale, screen precision, tooltip/export precision, rounding mode, null/zero/denominator-zero behavior, negative-zero handling, and formatter owner explicit. For rate/percentage/change fields, keep calculation value, display value, display unit, rounding, and label wording explicit. Chinese report UI display values should render `%` for rates unless the user or contract intentionally requires another term.
-4. Decide execution boundary: SQL/source query, backend service/DTO, API gateway/BFF, frontend adapter, or component-local display formatting.
-4a. When the backend source table/upstream/fixture changes, freeze the target API contract first. Map every existing response field from old source to new source and keep field name, nesting, type, unit, precision, enum meaning, nullability, formula, grain, and empty/no-permission behavior stable. Put new source names behind adapter rules; expose new fields only as additive fields named by convention and documented with compatibility status.
-5. Verify filter data support before adapter binding.
+2. Inspect table/content evidence before adapter design: source object, row grain, keys, request filter fields, permission fields, sample rows, result bounds, and gaps.
+3. Define grain, required fields, optional fields, defaults, null behavior, precision, units, numeric display contract, enum dictionaries, date/time formats, and locale labels.
+4. For metric-bearing fields, apply `$metric-number-display-contract`: keep raw numeric value, calculation value, display unit, display scale, screen precision, tooltip/export precision, rounding mode, null/zero/denominator-zero behavior, negative-zero handling, and formatter owner explicit. For rate/percentage/change fields, keep calculation value, display value, display unit, rounding, and label wording explicit. Chinese report UI display values should render `%` for rates unless the user or contract intentionally requires another term.
+5. Decide execution boundary: SQL/source query, backend service/DTO, API gateway/BFF, frontend adapter, or component-local display formatting. For simple table retrieval, keep the backend boundary at projection, predicates, stable order, pagination, and serializer aliases only.
+5a. When the backend source table/upstream/fixture changes, freeze the target API contract first. Map every existing response field from old source to new source and keep field name, nesting, type, unit, precision, enum meaning, nullability, formula, grain, and empty/no-permission behavior stable. Put new source names behind adapter rules; expose new fields only as additive fields named by convention and documented with compatibility status.
+6. Verify filter data support before adapter binding.
    For every filter that should affect the transformed output, define option source, input param, source/provider field, row grain, required fields, default example, non-default example, empty/no-permission example when relevant, and resolver/API branch behavior. If the source only has one default snapshot, classify it as a data-completeness gap before designing UI binding or adapter-side filtering.
-6. Verify data-version and endpoint-source boundaries.
+7. Verify data-version and endpoint-source boundaries.
    For snapshot/latest-period APIs, keep `snapshotDate`, `latestPeriod`, `loadBatch`, `dataVersion`, report version, or source version as query metadata/context that can flow across requests and must map to backend source predicates, precompute lookups, snapshot reuse rules, or cache keys. One endpoint's business payload may feed another component or response only when the API/model contract declares it as a canonical/shared snapshot or bounded component-group payload with matching grain, fields, filters, permission scope, version params, cache key, and invalidation behavior.
-7. Specify transformations: rename, flatten, group, aggregate, derive, rank, sort, paginate, reconcile, mask, filter, and permission scope.
-8. Provide representative before/after examples and edge cases.
-9. Define verification cases for default, filtered, empty, abnormal, missing, permission-limited, and large-result states.
+8. Specify transformations. For source-query-simple APIs, restrict transformations to rename/alias, mask, type serialization, null behavior, and permission metadata. Group, aggregate, derive, rank, total, reconcile, or broad reshape work must be marked as an approved derived/summary exception or `GAP-*`.
+9. Provide representative before/after examples and edge cases.
+10. Define verification cases for default, filtered, empty, abnormal, missing, permission-limited, and large-result states.
 
 ## Required Output
 
 - Source contract, target contract, and owner boundary.
+- Table/content understanding evidence before adapter rules: source object, grain, keys, filter fields, samples, permission fields, bounds, and gaps.
 - Field mapping table with formulas, units, precision, enums, defaults, and required status.
+- Minimal interface boundary proof: request filters as params, query-only retrieval, and no hidden aggregation/processing unless an exception is named.
 - Numeric display/precision contract for metric-bearing fields, including percent scale and formatter owner.
 - Source replacement compatibility table when applicable: existing target field, old source, new source, transform/default/null rule, unchanged behavior evidence, additive fields, and blocked breaking changes.
 - Transformation/adaptation rules and examples.
@@ -65,6 +70,7 @@ For PRD/prototype-derived report adapters, read `prd/execution/prd-targeted-read
 ## Quality Gate
 
 - Do not hide business aggregation, global filtering, pagination, or permission scope inside a frontend adapter unless explicitly bounded.
+- Do not use backend adapters to hide missing request params, missing table-content evidence, joins, aggregation, totals, rankings, formulas, or broad response reshaping for a simple interface.
 - Do not let backend publish fields whose source, formula, enum, or unit is unknown.
 - Do not let a source/table/upstream replacement rename or reshape existing API response fields. Compatibility repair belongs in mapping/adapter logic; unavoidable response drift requires explicit API versioning, deprecation, and impact analysis.
 - Do not expose new response fields from new source columns until they follow the project naming convention, are additive, and have source/type/unit/nullability/permission documentation.

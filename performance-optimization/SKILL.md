@@ -17,6 +17,8 @@ Use this skill to design, review, or repair performance-sensitive behavior acros
 
 It owns performance strategy and verification. It does not replace API design, data modeling, frontend implementation, or testing workflows.
 
+For interface implementation, performance optimization must respect the minimal source-query default: inspect table content first, keep filters as request params mapped to source predicates, and do not introduce joins, aggregation, exact counts, formulas, totals, rankings, cache-derived hidden state, or broad in-memory processing into a simple retrieval endpoint unless an approved derived/summary/precompute exception exists.
+
 ## Reference Loading
 
 - Data service resilience, cache, pagination, pooling, and capacity: `references/data-service-performance-resilience-contract.md`
@@ -34,13 +36,14 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 2. Define performance target: latency, throughput, first screen, interaction time, export time, row count, concurrency, freshness, or memory budget.
 3. Locate current bottleneck evidence: query plan, network waterfall, API logs, browser performance trace, data volume, component count, or user report.
 4. Select the data-service performance pattern before using Redis or async work: source-side query optimization, precompute/materialized snapshot, Redis cache, stale fallback, request coalescing, rate/concurrency limit, async job, or frontend rendering optimization.
-5. Apply the smallest appropriate optimization: query/index/range rewrite, pagination/keyset, aggregation pushdown, cache, connection pool, request batching, lazy loading, virtualization, chart sampling, memoization, or worker/off-main-thread processing.
+5. Apply the smallest appropriate optimization. For source-query-simple APIs, prefer projection/predicate/range rewrite, pagination/keyset, connection-pool safety, and request bounds. Use aggregation pushdown, cache, or precompute only as explicit derived/summary exceptions with correctness and permission evidence.
 6. Define verification commands, metrics, before/after evidence, and residual risk.
 
 ## Required Output
 
 - Performance surface and target.
 - Bottleneck evidence and hypothesis.
+- Minimal interface impact: whether the endpoint remains source-query-simple or has a documented derived/summary/precompute exception.
 - Optimization plan or implemented changes.
 - Redis/cache/precompute decision when relevant: key template, TTL/invalidation, permission-safety dimensions, stampede protection, fallback, and observability.
 - Risks around correctness, freshness, permission scope, cache invalidation, and export completeness.
@@ -49,6 +52,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 ## Quality Gate
 
 - Do not optimize by changing metric口径, permission scope, or business totals.
+- Do not optimize a simple table retrieval endpoint by adding hidden joins, aggregation, exact counts, formulas, totals, rankings, cache-derived hidden state, or broad post-processing.
 - Do not fetch broad result sets and filter/sort/page globally in memory for database-backed data.
 - Do not optimize request count by making one data API a hidden runtime source for another. Snapshot/dashboard aggregate APIs, metrics, trends, tables, and exports may share `snapshotDate/latestPeriod/loadBatch/dataVersion`, cache invalidation, and a declared canonical/shared snapshot; undocumented endpoint-payload reuse is the risk, not explicit snapshot reuse.
 - Do not optimize by removing or ignoring backend query params. Data-version, business filters, pagination/sort, and permission/data scope must remain source-side predicates, precompute lookup inputs, or cache-key dimensions.

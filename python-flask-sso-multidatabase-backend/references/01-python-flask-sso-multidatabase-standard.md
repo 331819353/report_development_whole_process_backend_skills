@@ -48,7 +48,7 @@ Rules:
 
 - API/controller files stay thin: read request params, call schemas/validators, invoke service, return unified response.
 - Service layer owns business orchestration, user/permission context, transaction boundary decisions, and calls to repositories.
-- Repository layer owns SQL/ORM execution, database selection, parameter binding, dialect differences, and source-specific result conversion.
+- Repository layer owns SQL/ORM execution, database selection, parameter binding, dialect differences, and source-specific result conversion. For simple table retrieval, repositories return bounded source-aligned rows and do not aggregate, rank, total, formula-calculate, or reshape broad results.
 - `app/db/` owns engine/session creation, pool configuration, connection lifecycle, and safe shutdown.
 - Complex SQL is stored under `app/sql/<db_name>/` when it is large, dialect-specific, or shared.
 - Frontend must not send raw SQL, table names, database names, arbitrary operators, or permission scope.
@@ -216,7 +216,8 @@ Pool settings must be explicit for production-bound services. StarRocks pool siz
 - Use SQLAlchemy `text()` with bound parameters or ORM query APIs. Do not concatenate user values into SQL.
 - Repositories return source rows or mapped records; services decide business composition.
 - Keep dialect-specific SQL under database-specific repository or SQL directories.
-- For report endpoints, push filters, permission scope, aggregation, sorting, pagination, Top N, and export scope into source/repository/precompute/cache, not frontend or in-memory post-filtering.
+- For source-query-simple report endpoints, inspect the table content first and push request filters, permission scope, sorting, and pagination into source/repository queries. Do not add joins, aggregation, exact counts, formulas, totals, rankings, Top N, or broad in-memory post-filtering.
+- For approved derived/summary endpoints, push aggregation, Top N, and export scope into source/repository/precompute/cache, not frontend or in-memory post-filtering.
 
 ## Unified Response And Status Codes
 

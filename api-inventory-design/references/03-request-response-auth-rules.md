@@ -20,6 +20,8 @@ Prefer reusable request model groups when possible:
 
 Do not invent different parameter names for the same concept across endpoints unless the project already has a standard.
 
+For minimal interface implementation, every client-visible filter that can change returned rows must be a request parameter. Do not rely on UI-only state, hidden controller defaults, previous endpoint state, application memory, or hardcoded source predicates.
+
 Required filter details:
 
 - Param name.
@@ -30,6 +32,7 @@ Required filter details:
 - Affected model/API behavior.
 - Filter scope: global/page-level, permission-scope, route/drilldown, or component-internal.
 - Source field or SQL predicate shape, such as `org_id = ?`, `biz_date >= ? AND biz_date < ?`, or `status IN (...)`.
+- Whether the filter is client-supplied, backend-defaulted, or backend-injected permission/data scope.
 - Index support: indexed / composite-indexed / function-indexed / full-text / unknown / not indexed.
 - SQL query-writing notes for database-backed filters: direct/type-consistent predicate, date/month range rewrite, avoided function/cast/arithmetic, avoided leading-wildcard search, and dynamic optional-filter handling.
 - Execution stage: source/provider/repository query, precompute/cache, or explicitly bounded client/service post-process. Use `TBD(GAP-*)` when unknown.
@@ -80,6 +83,7 @@ For report/BI/dashboard APIs, inventory rows must state:
 - Data-version contract: how `snapshotDate/latestPeriod/loadBatch/dataVersion` is exposed, supplied or defaulted, validated, mapped to source/provider predicates or precompute lookup keys, included in cache keys, and reused by related endpoints without creating endpoint-to-endpoint runtime dependency.
 - Frontend input rule: stable codes only. Do not plan APIs where the frontend sends raw SQL, table names, column expressions, arbitrary operators, arbitrary sort strings, unregistered metric formulas, or tenant/data-permission scope.
 - Backend-owned mapping: how dimension/metric/filter/sort codes map to source/SQL expressions and safe parameter binding.
+- Minimal implementation rule: table-backed APIs default to source-query-simple with table-content evidence, request-param predicates, projection, stable order, bounded pagination, and no hidden aggregation or processing.
 - Parameter guardrails: required filters, date range, max dimensions, max metrics, max `IN` values, keyword length, default/max page size, max returned rows, and export rows.
 - Permission behavior: menu/report access, row/data scope, field masking/visibility, export permission, tenant isolation, and no-permission response.
 - Scope filtering: which tenant/org/user/role/data-scope values the backend injects from auth/permission, and which source/provider predicate or cache key segment they map to.
@@ -112,8 +116,8 @@ For list/table APIs:
 - State default sort field and order.
 - State allowed sort fields.
 - State which filters are server-side.
-- State that global/page-level filters for database-backed APIs use SQL `WHERE` predicates or equivalent source/provider predicates. Component-internal filters may be local only when they operate on the already fetched component dataset and are not required for global scope, permission scope, pagination, ranking, aggregation, or counts.
-- State that global filters, sorting, pagination, ranking, Top/Bottom, counts, and table slicing are applied before response construction. Page/API-level full-materialize-then-filter behavior is not acceptable for list/table APIs except documented component-internal filters over already fetched component data, tiny static enums, or bounded lookups.
+- State that global/page-level filters for database-backed APIs use request params mapped to SQL `WHERE` predicates or equivalent source/provider predicates. Component-internal filters may be local only when they operate on the already fetched component dataset and are not required for global scope, permission scope, or pagination.
+- For simple table retrieval APIs, state that global filters, sorting, and pagination are applied before response construction and that the route does not add aggregation, exact counts, rankings, formulas, totals, or broad in-memory reshaping. Page/API-level full-materialize-then-filter behavior is not acceptable for list/table APIs except documented component-internal filters over already fetched component data, tiny static enums, or bounded lookups.
 - State whether keyword search is fuzzy, exact, or TBD.
 - State whether each database-backed filter can use a direct indexed predicate. Avoid inventory designs that require `FUNCTION(field) = ?` on indexed columns; rewrite date/month filters to range predicates and mark unknown index support with a `GAP-*`.
 - State optional-filter behavior. Avoid high-volume designs that require universal nullable-OR predicates such as `(:param IS NULL OR col = :param)`; prefer generated predicates with safe parameter binding.
@@ -122,7 +126,7 @@ For charts:
 
 - State whether result ordering is meaningful.
 - State whether top N and "others" aggregation exist.
-- State whether grouping, aggregation, Top/Bottom, and counts are computed by SQL/database query or by an explicitly bounded non-database source. For database authoritative sources, default to SQL pushdown rather than in-memory calculation. Do not plan a chart API that builds the full component dataset and then filters/ranks/groups it after construction.
+- State whether the chart can query an existing source-aligned table at the displayed grain. If not, record a derived/summary/precompute gap instead of hiding grouping, aggregation, Top/Bottom, counts, or formula work inside a simple interface implementation. Do not plan a chart API that builds the full component dataset and then filters/ranks/groups it after construction.
 
 For mock-derived backend/API implementation:
 

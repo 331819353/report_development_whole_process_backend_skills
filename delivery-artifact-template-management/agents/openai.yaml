@@ -1,4 +1,4 @@
 interface:
   display_name: "交付物模板管理"
-  short_description: "集中管理 API 清单、数据模型、权限矩阵、质量规则、测试矩阵、缺陷证据、功能说明和版本索引模板。"
-  default_prompt: "Use $delivery-artifact-template-management to choose or produce reusable delivery artifact templates, matrix schemas, and document skeletons."
+  short_description: "集中管理 API 清单、数据模型、最简接口证据、权限矩阵、质量规则、测试矩阵、缺陷证据、功能说明和版本索引模板。"
+  default_prompt: "Use $delivery-artifact-template-management to choose or produce reusable delivery artifact templates, matrix schemas, and document skeletons. For backend/API templates, preserve minimal interface columns for table-content evidence, filters-as-request-params mapping, source-query-simple boundaries, and derived/summary exceptions or gaps."

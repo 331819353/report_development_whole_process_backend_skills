@@ -12,7 +12,7 @@ Use this reference when creating the API document skeleton.
 1. Document metadata
    - Title, version, date, owner, status, environment profile/config file, related artifacts, and change notes.
 2. Common conventions
-   - `.env.test`/`.env.production`, base URL, versioning, auth, headers, response envelope, error envelope, pagination, sorting, filtering, date/time, enums, file upload/download, idempotency, report data-service backend conventions, async/offline job conventions, concurrency/cache/pool/timeout/retry/fallback, SQL query conventions for database-backed APIs, and rate/performance-resilience limits.
+   - `.env.test`/`.env.production`, base URL, versioning, auth, headers, response envelope, error envelope, pagination, sorting, filtering, minimal interface implementation convention, date/time, enums, file upload/download, idempotency, report data-service backend conventions, async/offline job conventions, concurrency/cache/pool/timeout/retry/fallback, SQL query conventions for database-backed APIs, and rate/performance-resilience limits.
 3. Endpoint overview table
    - API id, module/domain, name, method, path, purpose, auth, response model, priority, status, and pending items.
    - Add one plain-language sentence before the table that explains the endpoint group and frontend/backend consumer.
@@ -43,10 +43,11 @@ Use this reference when creating the API document skeleton.
 - Pagination names, defaults, maximums, and total-count behavior.
 - Sorting syntax, allowed sort fields, and default sort.
 - Filter syntax, date range inclusivity, timezone, enum values, and default filters.
+- Minimal interface implementation: table-content evidence first, client-visible filters as request params, request-param-to-source-field mapping, source-query-simple vs derived-summary-exception, and query-only boundaries for simple table retrieval.
 - File upload/download content type, filename, streaming, and export size limits.
 - Report data-service backend conventions for report/BI/dashboard APIs: report type, metadata/fixed-contract source, dimension/metric/filter/sort whitelist, frontend-code-only rule, backend-owned source/SQL mapping, parameter guardrails, permission injection, component-ready result metadata, freshness/quality, cache safety, export lifecycle, audit, versioning, and slow-report governance.
 - Data-service performance/resilience conventions: expected volume/latency, concurrency model, cache/precompute, resource pools, `ApiError`/timeout/exception connection release/close behavior, async/offline job strategy, timeout/retry/fallback, rate/concurrency limits, and observability.
-- SQL query conventions for database-backed APIs: selected columns, sargable predicates, join cardinality, pagination/keyset strategy, aggregation/window placement, dynamic optional-filter strategy, and plan-evidence expectation.
+- SQL query conventions for database-backed APIs: selected columns, sargable predicates, request-param predicates, pagination/keyset strategy, dynamic optional-filter strategy, source-query-simple no-aggregation/no-join defaults, derived-summary exception rules, and plan-evidence expectation.
 - Async job, callback, webhook, streaming, or batch-processing conventions when relevant, including status/progress, cancellation, queue/worker limits, retry/dead-letter behavior, idempotency, result retention, and failure states.
 - Backward compatibility and deprecation notes.
 - Production-bound docs include `.env.production` profile/base URL, health/runtime evidence, source authority, auth/permission, observability, performance/resilience/export limits, testing handoff, and blockers.

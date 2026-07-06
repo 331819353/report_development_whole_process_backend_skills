@@ -34,9 +34,10 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 3. Align directories and ownership: `app/api`, `app/middlewares`, `app/services`, `app/repositories`, `app/models`, `app/db`, `app/schemas`, `app/utils`, and `app/sql/<db_name>`.
 4. Define SSO behavior: `Access-Token`, optional `Application-Key` when IAMA/clientId is active, token validation owner, local user-role-permission mapping, 401 token-invalid behavior, and 403 permission-denied behavior.
 5. Define the multi-database role map and SQLAlchemy engine/session lifecycle before repository implementation.
-6. Keep controllers thin. Put token validation in middleware/service, business orchestration in services, and database access in repositories/source adapters.
-7. Define env variables, secret handling, response envelope, error/status mapping, logging/redaction, tests, WSGI/Gunicorn/Docker/Nginx or gateway entrypoints.
-8. Route API contract, report query-service, performance, SSO endpoint details, or runtime smoke work to the owning skills when the task goes beyond architecture baseline.
+6. Apply minimal interface implementation before route/repository edits: inspect table content, map filters to request params and source predicates, keep repositories query-only for simple table retrieval, and avoid hidden joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory processing.
+7. Keep controllers thin. Put token validation in middleware/service, business orchestration in services, and database access in repositories/source adapters.
+8. Define env variables, secret handling, response envelope, error/status mapping, logging/redaction, tests, WSGI/Gunicorn/Docker/Nginx or gateway entrypoints.
+9. Route API contract, report query-service, performance, SSO endpoint details, or runtime smoke work to the owning skills when the task goes beyond architecture baseline.
 
 ## Required Output
 
@@ -45,6 +46,7 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Directory/file plan with ownership layer.
 - SSO/auth plan: headers, validation path, local user mapping, 401/403 behavior, redaction.
 - Multi-database plan: SQLite/MySQL/Oracle/StarRocks roles, env vars, engine/session ownership, pool settings, SQL directory split.
+- Minimal interface proof: table-content evidence, request-param-to-source-field mapping, query-only repository boundary, and derived/summary exceptions or gaps.
 - API/service/repository/db layering plan.
 - Response/status, naming, testing, deployment, and readiness notes.
 - Handoff notes for `$backend-development-workflow`, `$api-documentation-design`, `$haier-sso-integration`, `$performance-optimization`, or `$runtime-url-smoke-test` when needed.
@@ -56,6 +58,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 - Do not treat StarRocks as ordinary MySQL; its analytics role, SQL assumptions, transaction assumptions, pool settings, and performance limits must be explicit.
 - Do not mix database responsibilities without a role map.
 - Do not concatenate user-controlled values into SQL.
+- Do not implement Flask routes for simple table retrieval before inspecting table content and mapping filters as request params.
+- Do not hide joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory processing inside route/service/repository code for a simple source-query endpoint.
 - Do not allow repository or export paths to leak pooled connections on exceptions.
 - Do not log raw tokens, SSO payloads, secrets, raw SQL literals, or raw personal data.
 - Do not claim architecture alignment until directory placement, SSO behavior, database ownership, env/profile strategy, test scope, and deployment entrypoints are explicit.

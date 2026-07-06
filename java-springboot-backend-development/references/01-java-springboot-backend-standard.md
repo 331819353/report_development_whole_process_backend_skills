@@ -184,9 +184,21 @@ Rules:
 
 - Controllers only receive requests, validate parameters, and return results.
 - Services orchestrate business logic, domain rules, and transactions.
-- Mapper/Repository owns persistence only.
+- Mapper/Repository owns persistence only. For source-query-simple APIs, it selects bounded source-aligned rows with request-param predicates, stable order, and pagination; it does not aggregate, rank, total, formula-calculate, or reshape broad rows.
 - Entity is not returned to frontend directly.
 - DTO is not used as database entity.
+
+## Minimal Table-Backed API Rule
+
+Before implementing a table-backed Controller/Service/Mapper path:
+
+- inspect every involved table/view/fixture/upstream object's content, row grain, keys, filter fields, sample rows, permission fields, and result bounds;
+- put every client-visible filter into a query param, path variable, or request DTO field;
+- map each filter to a MyBatis/JPA predicate or safe query condition;
+- keep simple retrieval endpoints query-only: projection, predicates, stable order, pagination, and VO conversion;
+- avoid hidden joins, `GROUP BY`, aggregate/window functions, exact total counts, formulas, totals, rankings, Top N, or service-level collection processing unless an approved derived/summary/precompute contract exists.
+
+If the requested UI needs aggregate or derived data, query an existing source-aligned summary table or route the work to model/precompute design instead of computing it in a first-pass Controller/Service implementation.
 
 ## RESTful API And Naming
 

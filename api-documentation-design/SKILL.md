@@ -36,6 +36,8 @@ For PRD/prototype-derived report APIs, read `prd/execution/prd-targeted-reading-
 2. Establish shared conventions.
    Define base URL, version, auth, headers, common request model groups, response envelope, errors, pagination, sorting, filters, date/time format, enum format, numeric display/precision contract, file behavior, default/max page size, global filter execution, component-internal local filter scope, Redis/cache expectations, connection-pool expectations, large-result handling, and export limits before documenting endpoint details. Redis/cache expectations must be specific enough for implementation, not a placeholder.
 
+   For interface implementation handoff, document the minimal implementation convention before endpoint details: table content must be understood first; every client-visible filter is a request param mapped to a source predicate; simple table retrieval endpoints query source-aligned rows only through projection, predicates, stable ordering, and pagination; hidden joins, aggregation, exact counts, totals, rankings, formulas, chart/KPI derivation, and broad in-memory reshaping require an explicit derived/summary/precompute exception or `GAP-*`.
+
    When the backend follows Python/Flask SSO conventions, document the SSO headers and failure semantics in common conventions before endpoint details: `Access-Token`, optional `Application-Key` when IAMA/clientId is active, token validation owner, public-route allowlist, 401 token-invalid behavior, 403 permission-denied behavior, logout/re-login expectations, and token/log redaction rules.
 
    For filter-bearing endpoints, document data completeness before binding: option source, source/provider execution stage, required response fields, row grain, default request/response example, at least one non-default request/response example, empty/no-permission example when relevant, and resolver/API branch behavior. If only one default snapshot exists for an affecting filter, keep the endpoint `partial` or `blocked`.
@@ -73,6 +75,7 @@ For PRD/prototype-derived report APIs, read `prd/execution/prd-targeted-reading-
 - Read `$metric-number-display-contract` for metric unit, scale, precision, percent/rate, rounding, tooltip/export precision, and formatter ownership.
 - Read `$environment-profile-contract` when base URLs, test/production profiles, auth endpoints, source mode, proxy/CORS, or release handoff matter.
 - Read `$sql-query-optimization` for database-backed endpoint SQL feasibility and query-shape risks.
+- Read `$backend-development-workflow` `references/minimal-interface-implementation-principles.md` when the API document will drive backend implementation or table-backed mock-to-real replacement.
 - Read `$redis-cache-design-patterns` when Redis/cache behavior is part of the API contract.
 - Read `$delivery-artifact-template-management` when creating the API document skeleton, common conventions, overview tables, and appendix.
 - Read [references/03-endpoint-detail-rules.md](references/03-endpoint-detail-rules.md) when writing endpoint-level request, response, example, auth, error, performance, and compatibility sections.

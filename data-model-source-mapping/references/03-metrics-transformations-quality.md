@@ -2,6 +2,8 @@
 
 Use this reference for metric口径, transformations, permissions, and data quality.
 
+For minimal interface implementation, do not create metric formulas, aggregations, rankings, totals, or derived fields inside the retrieval endpoint. First verify whether an existing source table already stores the required grain and fields. If not, record a derived/summary/precompute `GAP-*` instead of hiding calculation in controller, service, repository, adapter, or SQL for a simple table query.
+
 ## Metric Formula Requirements
 
 Each metric needs:
@@ -54,6 +56,8 @@ Document transformations explicitly:
 | SCD/history matching | Effective start/end fields, event-time match rule, current vs historical behavior |
 | Many-to-many handling | Bridge model, allocation rule, pre-aggregation, duplicated-measure prevention |
 | Additivity handling | Numerator/denominator preservation, semi-additive time rule, non-additive recomputation |
+
+For source-query-simple APIs, the transformation table should normally contain only aliases, type serialization, null preservation, masking, and source-field-to-response-field mapping. Period aggregation, hierarchy rollup, deduplication, additivity handling, and metric recomputation require an approved derived/summary source or an explicit gap.
 
 ## Data Quality Rules
 

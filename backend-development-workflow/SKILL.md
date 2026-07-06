@@ -24,6 +24,7 @@ For report/dashboard/cockpit/detail/analysis/self-service work, `prd/execution/p
 - `references/data-service-design-template.md` for backend/data-service design output.
 - `references/api-document-template.md` for API documentation.
 - `references/report-data-service-backend-implementation.md` for implementation details.
+- `references/minimal-interface-implementation-principles.md` for interface implementation's default simple mode: filters as request params, table-content understanding before work, and query-only retrieval without hidden aggregation or processing.
 - `references/missing-info-template.md` for blocked or partial backend handoff.
 - `references/backend-development-gates.md` for detailed constraints, required outputs, and readiness blockers.
 - Upstream report handoff: `prd/execution/prd-targeted-reading-analysis.md`, `docs/prototype-data-summary.md`, `prd/execution/prd-data-api-contract.md`, `prd/execution/prd-metric-dictionary-and-mounting.md`, `prd/execution/prd-interaction-contract.md`, and `prd/children/prd-child-backend.md` when present.
@@ -60,14 +61,15 @@ Decide endpoint families, request context, response envelope, service/query/sour
 3. For PRD/prototype-derived backend work, consume targeted reading rows before endpoint/model design: cite relevant `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows, decide source authority, note non-authority materials, and connect each backend decision to a row or blocker.
 4. Run quality gates when targeted reading, source/API/model/frontend expectations conflict.
 5. Run the anti-laziness execution gate from `$quality-gate-validation` for implementation, repair, documentation, or acceptance steps. Keep `LAZY-*` findings visible until evidence closes them.
-6. Define data-service design: boundaries, layers, request context, response model, numeric metadata contract, data-version contract, permission scope, SSO/auth flow, database ownership, cache/precompute, and observability. For prototype-derived work, create a mock-to-real mapping for every affected mock endpoint/data source/component data key before endpoint design. Load `$python-flask-sso-multidatabase-backend` when Python/Flask SSO or multi-database structure is in scope; load `$java-springboot-backend-development` when Java/Spring Boot structure, Spring Security/JWT/SSO, Maven/Docker, or Profile conventions are in scope.
-7. Produce or update API documentation through `$api-documentation-design`.
-8. Validate contracts against frontend expectations, targeted reading rows, source samples, OpenAPI, mocks, prototype-data-summary rows, PRD data/API rows, routes, and runtime responses.
-9. Design transformation adapters for source-to-response and response-to-view-model compatibility.
-10. If implementation is requested, edit backend code with `$code-change-ledger-management` discipline and preserve existing project patterns.
-11. Configure pools, Redis/cache, timeouts, errors, logging, health checks, and env profiles. Use `$redis-cache-design-patterns` when Redis is named and `$environment-profile-contract` when handoff profiles matter.
-12. Run available tests/build/startup and `$runtime-url-smoke-test` when a URL is produced.
-13. Produce backend handoff notes, gaps, readiness, and version links.
+6. Apply the minimal interface implementation principles before endpoint design or code edits. For every involved table/view/fixture/upstream object, inspect table content, row grain, keys, filter fields, sample rows, result bounds, and gaps. Treat client-visible filters as request params. Default repository access to projection + predicates + stable order + pagination; do not add hidden joins, aggregation, formulas, totals, rankings, exact counts, broad in-memory filtering, or response reshaping for simple table retrieval.
+7. Define data-service design: boundaries, layers, request context, response model, numeric metadata contract, data-version contract, permission scope, SSO/auth flow, database ownership, cache/precompute, and observability. For prototype-derived work, create a mock-to-real mapping for every affected mock endpoint/data source/component data key before endpoint design. Load `$python-flask-sso-multidatabase-backend` when Python/Flask SSO or multi-database structure is in scope; load `$java-springboot-backend-development` when Java/Spring Boot structure, Spring Security/JWT/SSO, Maven/Docker, or Profile conventions are in scope.
+8. Produce or update API documentation through `$api-documentation-design`.
+9. Validate contracts against frontend expectations, targeted reading rows, table-content evidence, source samples, OpenAPI, mocks, prototype-data-summary rows, PRD data/API rows, routes, and runtime responses.
+10. Design transformation adapters for source-to-response and response-to-view-model compatibility only after proving the simple query boundary is insufficient or the mapping is only field-alias/serializer compatibility. Do not use adapters to hide business aggregation or missing filter params.
+11. If implementation is requested, edit backend code with `$code-change-ledger-management` discipline and preserve existing project patterns.
+12. Configure pools, Redis/cache, timeouts, errors, logging, health checks, and env profiles. Use `$redis-cache-design-patterns` when Redis is named and `$environment-profile-contract` when handoff profiles matter.
+13. Run available tests/build/startup and `$runtime-url-smoke-test` when a URL is produced.
+14. Produce backend handoff notes, gaps, readiness, and version links.
 
 ## Required Output
 
@@ -78,6 +80,7 @@ Decide endpoint families, request context, response envelope, service/query/sour
 - Python/Flask SSO and multi-database architecture when applicable: app factory, route/service/repository/db layers, token validation, 401/403, database role map, env vars, and pool ownership.
 - Java/Spring Boot architecture when applicable: controller/service/mapper-or-repository layering, `ApiResponse<T>`, global exception handling, Spring Security/JWT/SSO, IAM/IAMA or local JWT bridge, Profile YAML, Maven/Gradle, Docker, and startup commands.
 - Source/model/adapter mapping and response compatibility notes.
+- Minimal interface proof: table-content understanding matrix for every involved source object, request-param-to-source-field mapping, query-only proof, absence of hidden aggregation/processing, and open `GAP-*` rows.
 - Mock-to-real backend mapping: mock endpoint/data source/component data key, target real API, request DTO, response DTO, source/model dependency, service method, frontend consumer, filter/interaction/conclusion-rule impact, permission/cache/error behavior, and verification.
 - Numeric precision/display contract: value type, raw/display unit, scale, precision, tooltip/export precision, rounding, null/zero/denominator-zero, and data-vs-presentation ownership.
 - Runtime model: pools, Redis/cache/precompute, timeout/fallback, export/async behavior, env/auth, health, logging, observability.
@@ -88,6 +91,9 @@ Decide endpoint families, request context, response envelope, service/query/sour
 ## Quality Gate
 
 - Do not implement routes from UI fields alone; trace endpoints to source/model/metric/permission contracts.
+- Do not implement or document table-backed interfaces before understanding every involved table's content, grain, keys, filter fields, samples, result bounds, and permission fields.
+- Do not mark interface implementation ready when client-visible filters are hidden in controller/service code instead of being request params mapped to source predicates.
+- Do not add aggregation, totals, rankings, formula calculation, broad in-memory processing, or unproven multi-table joins to a simple table retrieval endpoint. Query source-aligned rows first; route aggregate needs to explicit model/precompute/design work.
 - Do not implement or document prototype-derived backend behavior when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, lacks source-material/evidence-to-decision trace, or is not consumed by API/model/runtime choices.
 - Do not implement or document prototype-derived report APIs without consuming `docs/prototype-data-summary.md` and the PRD data/API execution files when they exist.
 - Do not mark mock-to-real replacement ready when affected mock endpoints, component data keys, filters, interactions, exports, drilldowns, or conclusion-rule inputs lack replacement-matrix rows or explicit `GAP-*` blockers.

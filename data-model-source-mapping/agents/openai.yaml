@@ -1,4 +1,4 @@
 interface:
   display_name: "数据模型源映射"
-  short_description: "沉淀OLAP模型、指标口径、数值精度、源映射和血缘"
-  default_prompt: "Use $data-model-source-mapping to create reusable OLAP-aware data model files with business questions, grains, facts, dimensions, metrics, numeric precision/display contracts, layers, source mappings, permissions, quality rules, targeted reading rows from prd/execution/prd-targeted-reading-analysis.md when applicable, and traceability."
+  short_description: "沉淀OLAP模型、指标口径、数值精度、源映射、表内容理解和血缘"
+  default_prompt: "Use $data-model-source-mapping to create reusable data model files with business questions, grains, facts, dimensions, metrics, numeric precision/display contracts, layers, source mappings, permissions, quality rules, targeted reading rows from prd/execution/prd-targeted-reading-analysis.md when applicable, and traceability. For table-backed APIs, inspect each table's content first, map request filters to source predicates, and keep source-query-simple models free of hidden aggregation or processing unless a derived/summary exception is documented."

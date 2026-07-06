@@ -37,6 +37,7 @@ Read only the reference files needed for the current task:
 | Define metric formulas, transformations, permissions, and data-quality rules | `references/03-metrics-transformations-quality.md` |
 | Run model traceability, no-invention, and pending-item routing checks | `references/04-model-stability-gate.md` |
 | Required model output, hard constraints, and final quality gate | `references/05-model-output-and-gates.md` |
+| Minimal interface implementation source evidence: table content first, filters as params, query-only retrieval | `$backend-development-workflow` `references/minimal-interface-implementation-principles.md` |
 | Metric number display contract for logical/response fields | `$metric-number-display-contract` |
 | Resolve authority conflicts when requirements, metric lists, prototype code, API contracts, source documents, or tests disagree | `$quality-gate-validation` |
 | Audit whether source/logical/response model design reasonably supports the business question, API inventory, frontend contract, permissions, and tests | `$quality-gate-validation` |
@@ -64,33 +65,36 @@ For PRD/prototype-derived report mapping, read `prd/execution/prd-targeted-readi
 1. Identify source systems.
    List every source table/view/file/API, owner, business domain, refresh cadence, access method, permission need, expected volume, and known quality issue.
 
-2. Define source models.
+2. Understand each source table's data content before mapping.
+   For every table/view/fixture/upstream object, inspect or require schema, row grain, keys, partition/date fields, filter fields, permission fields, representative sample rows, nullable/enumerated fields, measure-like columns, result bounds, and gaps. Do not design a response model, join, aggregation, or metric formula from a table name alone.
+
+3. Define source models.
    For each source, capture physical name, business meaning, grain, primary key, natural keys, partition/date fields, dimensions, measures, enums, nullable fields, and sample values.
 
-3. Define logical/business models.
+4. Define logical/business models.
    Combine sources into business objects such as customer, order, project, inventory, contract, payment, task, alert, organization, or period. Define joins, relationship cardinality, aggregation grain, and ownership.
 
-4. Define response/view models.
+5. Define response/view models.
    Map prototype/API-facing fields to logical/source fields. Include display labels, field types, units, precision, numeric display contracts, enum labels, sorting, empty-state behavior, and whether the field is calculated.
    Use `$metric-number-display-contract` for value type, raw/display unit, display scale, precision, percent/rate behavior, tooltip/export precision, rounding, null/zero/denominator-zero behavior, and formatter owner.
 
-4a. Preserve response contract compatibility during source replacement.
+5a. Preserve response contract compatibility during source replacement.
    When the source table, upstream API, fixture schema, or serving model changes, keep existing response/view field codes and behavior stable. Produce a before/after mapping: response field -> old source field/formula -> new source field/formula -> transformation/default/null rule -> verification evidence. New response fields must be additive and named by the project convention; if absent, use stable English lowerCamel field codes. Any required rename, type/unit/precision/enum/nullability/formula/grain change is a breaking `DESIGN-*` or `GAP-*` item until versioning and downstream impact are explicit.
 
-5. Define data-version and snapshot semantics.
+6. Define data-version and snapshot semantics.
    When the report needs current/latest/snapshot behavior, document the snapshot role, business time field, `snapshotDate` or `latestPeriod`, `loadBatch`, `dataVersion`, source partition, report version, freshness timestamp, and invalidation/backfill rule. Clarify which response models expose version metadata, which fact/logical/precompute/snapshot models are queried or reused by each endpoint, and which source fields or partitions those params filter. If an API response is intentionally the canonical/shared snapshot for other components, model it as a named snapshot/precompute/view model with grain, fields, scope, and reuse rules instead of treating it as an incidental response.
 
-6. Define filter-supporting data completeness.
-   When consuming pages or APIs have filters, document the filter option source, fact/business row grain, required fields, default state, at least one non-default state, empty/no-permission state when relevant, and resolver/API branch dependency before declaring the response/view model filter-ready. Single default snapshots are not enough for affecting filters unless the component is explicitly invariant.
+7. Define filter-supporting data completeness.
+   When consuming pages or APIs have filters, document the filter option source, request param name, source predicate field, fact/business row grain, required fields, default state, at least one non-default state, empty/no-permission state when relevant, and resolver/API branch dependency before declaring the response/view model filter-ready. Single default snapshots are not enough for affecting filters unless the component is explicitly invariant.
 
-7. Define metric formulas.
+8. Define metric formulas.
    For each metric, document formula, numerator, denominator, filter scope, period logic, baseline, threshold, direction, unit, precision, numeric display contract, and reconciliation rule.
 
-8. Define transformation notes.
-   Capture date conversion, period aggregation, unit conversion, enum mapping, rounding, default fill, hierarchy rollup, deduplication, and permission filtering.
+9. Define transformation notes.
+   For simple interface implementation, keep transformations to source aliases, type serialization, masking, and null preservation. Capture date conversion, period aggregation, unit conversion, enum mapping, rounding, default fill, hierarchy rollup, deduplication, and permission filtering only when the contract explicitly needs them; aggregation/derived work requires a named source table, precompute, or `GAP-*`.
 
-9. Mark gaps.
+10. Mark gaps.
    Record unresolved source, field, formula, enum, join, sample, owner, refresh, or permission gaps in this skill's pending model items with stable `GAP-*` IDs, impact, owner question, current assumption, and downstream blocking status.
 
-10. Run the design reasonableness gate.
+11. Run the design reasonableness gate.
    Check whether the model grain, joins, response/view models, metric formulas, transformation strategy, permissions, freshness, and quality rules reasonably support the consuming APIs, UI components, filters, and tests. Record unreasonable model structures as `DESIGN-*` findings.

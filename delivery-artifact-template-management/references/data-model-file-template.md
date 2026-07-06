@@ -31,8 +31,8 @@ Allowed source types: `table`, `view`, `file`, `upstream-api`, `manual`, `derive
 
 ## 4. Source Models
 
-| Source model ID | Source ID | Layer | Model type | Physical object | Subject area | Business process/object | Business meaning | Grain | Primary key | Natural keys | Business time field | Date/partition field | Update mode | Field count | Status | Gap IDs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Source model ID | Source ID | Layer | Model type | Physical object | Subject area | Business process/object | Business meaning | Grain | Primary key | Natural keys | Business time field | Date/partition field | Filter fields | Permission/scope fields | Sample rows evidence | Result bounds/stable order | Update mode | Field count | Status | Gap IDs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Layer values: `ODS`, `DWD`, `DIM`, `DWS`, `ADS`, `external`, `unknown`.
 
@@ -46,6 +46,11 @@ Field metadata:
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 Additivity values: `additive`, `semi-additive`, `non-additive`, `none`, `unknown`.
+
+Minimal interface table-content matrix:
+
+| Source model ID | Source object | Row grain understood? | Keys understood? | Request filters supported | Non-default sample available? | Permission fields understood? | Query-only ready? | Gaps |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## 5. Logical Models
 
@@ -76,8 +81,8 @@ Metric type values: `atomic`, `derived`, `composite`.
 
 ## 8. Transformation Mapping
 
-| Mapping ID | Source field/model | Logical field/model | Response field/model | Transformation | Grain change | Time口径 | Permission filter | Quality check | Gap IDs |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| Mapping ID | Source field/model | Logical field/model | Response field/model | Request param/source predicate | Transformation | Grain change | Minimal implementation mode | Time口径 | Permission filter | Quality check | Gap IDs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## 9. Security Rules
 

@@ -9,14 +9,31 @@ Always map in this order:
 1. Business question, subject area, and consuming scenario.
 2. Business process/object and intended analysis grain.
 3. Source system and physical object.
-4. Source model, layer, model type, and physical fields.
-5. Logical/business model.
-6. Response/view model.
-7. Metric, additivity, and transformation rules.
-8. Gap IDs for anything unresolved.
+4. Table-content understanding: schema, row grain, keys, filter fields, permission fields, sample rows, result bounds, and gaps.
+5. Source model, layer, model type, and physical fields.
+6. Logical/business model.
+7. Response/view model.
+8. Metric, additivity, and transformation rules.
+9. Gap IDs for anything unresolved.
 
 Do not jump directly from mock fields to response fields without checking source and logical models.
 Do not jump directly from source tables to facts or summaries without naming the business process and grain.
+Do not design a table-backed interface from table names alone; inspect what each table actually contains first.
+
+## Table Content Understanding
+
+For minimal interface implementation, table content evidence is mandatory before mapping or API handoff:
+
+- physical table/view/fixture/upstream object and source mode;
+- sample rows for default and at least one non-default filter state when filters exist;
+- row grain and uniqueness expectation;
+- primary/natural keys, partition/date fields, and tenant/org/permission fields;
+- fields that can safely support request filters, sorting, and pagination;
+- measure-like fields, enum-like fields, null-heavy fields, large/sensitive fields, and fields that should not be exposed;
+- expected row volume, result bounds, and stable ordering candidate;
+- `GAP-*` entries for unknown grain, keys, filters, samples, permission fields, or freshness.
+
+Simple interface source mapping should map request params to source predicates and response fields to source columns/aliases. Do not introduce joins, aggregation, formulas, totals, or rankings unless there is a named derived/summary/precompute source or an explicit `GAP-*` for that work.
 
 ## Source Model Rules
 
@@ -30,11 +47,13 @@ For each source model, state:
 - Primary key or natural key.
 - Business time field, ingestion/ETL time field when available, and date/partition field.
 - Dimensions, measures, enums, and nullable fields.
+- Fields usable as request filters, sort fields, pagination anchors, permission predicates, and response projections.
+- Representative sample values and non-default filter examples when available.
 - Additivity for measure fields when known.
 - Update mode: full, incremental, zipper/SCD, snapshot, event, or unknown.
 - Owner, refresh cadence, permission, and known quality risks.
 
-If grain, key, owner, or refresh cadence is unknown, create a `GAP-*` item.
+If grain, key, owner, filter fields, representative samples, permission fields, or refresh cadence is unknown, create a `GAP-*` item.
 
 ## Logical Model Rules
 
@@ -79,6 +98,8 @@ For each response field:
 - Keep display labels separate from field names.
 
 Response/view models may consume ADS or DWS when the API/page needs precomputed metrics, high-frequency query speed, or page-specific layout fields. Document the traceability path back to DWS/DWD/ODS or the accepted source.
+
+For source-query-simple APIs, response/view models should stay source-aligned: selected fields, stable aliases, type/null/sensitivity metadata, and pagination/sort metadata. Aggregate fields, rankings, totals, formulas, or chart-ready series require an existing source-aligned summary table or a separate derived/summary design item.
 
 ## Layering And Serving Rules
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Java SpringBoot后端开发"
-  short_description: "沉淀 Spring Boot 后端目录、分层、统一响应、异常、JWT/SSO、Profile、Maven/Docker 约定。"
-  default_prompt: "Use $java-springboot-backend-development when developing or reviewing a Java Spring Boot backend project structure, REST API layering, unified response, global exceptions, JWT/SSO with Spring Security, profiles, Maven/Docker, and naming conventions."
+  short_description: "沉淀 Spring Boot 后端目录、分层、统一响应、异常、JWT/SSO、Profile、Maven/Docker 和最简接口实现约定。"
+  default_prompt: "Use $java-springboot-backend-development when developing or reviewing a Java Spring Boot backend project structure, REST API layering, unified response, global exceptions, JWT/SSO with Spring Security, profiles, Maven/Docker, and naming conventions. For table-backed APIs, inspect table content first, make filters request DTO/query params mapped to source predicates, keep mapper/repository paths query-only for simple retrieval, and avoid hidden joins, aggregation, exact counts, formulas, totals, rankings, or broad service-side processing."

@@ -7,6 +7,8 @@
 - Response/view field names, nesting, types, units, precision, enum meanings, nullability, formulas, grain, and empty/no-permission behavior are stable compatibility contracts across source/table replacement. Source names may change; response contracts may not drift silently.
 - New response/view fields must follow the project naming convention, or stable English lowerCamel when no convention exists, and must declare source, meaning, type, unit, nullability, permission/sensitivity, compatibility status, and downstream consumers.
 - Do not resolve contradictory source/model/API/frontend evidence by preference or convenience; unresolved `P0`/`P1` conflicts keep affected models `partial` or `blocked`.
+- Table-backed interface models must include table-content evidence before readiness: schema/source object, row grain, keys, filter fields, representative rows, permission fields, result bounds, and `GAP-*` items.
+- Client-visible filters must map from request params to source fields/predicates. Do not model filters as UI-only state, hidden defaults, previous endpoint state, or application memory.
 - Every metric must have formula, grain, dimensions, period logic, source dependency, precision, and numeric display contract, or a `GAP-*` item.
 - Snapshot/latest-period response models must trace to source/logical/precompute/cache/snapshot models through explicit data-version fields and source/filter predicates. Do not define one response model as the authoritative source for another response model unless it is explicitly modeled as a canonical/shared snapshot with grain, fields, scope, and reuse rules.
 - Filterable response/view models must prove data completeness before filter binding: option dimensions, matching fact/business rows, required fields, default/non-default states, empty/no-permission states when relevant, and resolver/API branch coverage. Missing evidence is a `GAP-*`, not a frontend binding assumption.
@@ -16,6 +18,7 @@
 - For prototype-derived report work, `docs/prototype-data-summary.md` and PRD execution files are upstream evidence for mock endpoints, local datasets, component data keys, metric mounting, filter/action/export/detail usage, and conclusion-rule inputs. Every such item must trace to a source/logical/response model row or `GAP-*`.
 - `Mock API To HTTP API Replacement Matrix` and `Metric To Interface / Source Mapping` rows must be represented in model outputs before backend API documentation or implementation is considered ready.
 - Do not keep a model structure that is technically traceable but unreasonable for the consuming API/UI/test workflow. Use `DESIGN-*` findings when grain, joins, response shape, metric formula, transformation, permission, or freshness design would distort the business answer.
+- Do not model a simple table retrieval API as if the implementation will aggregate, rank, total, compute formulas, join multiple business tables, or reshape broad rows in memory. Use an existing source-aligned table at the required grain or mark a derived/summary/precompute `GAP-*`.
 - Do not use a field in a response model if its type, unit, enum, or null behavior is unknown and undocumented.
 - Sensitive fields must declare sensitivity level, masking rule, and field-level permission behavior, or link to `GAP-*`.
 - Do not leave required table cells blank. Use `none` when intentionally not applicable, or `TBD(GAP-*)` when unknown.
@@ -27,13 +30,13 @@ Use this structure for the 数据模型文件:
 
 1. Model overview: purpose, supported pages/APIs, owner, status.
 2. Data sources: source name, type, location, owner, refresh, permission, reliability notes.
-3. Source models: physical fields and metadata.
+3. Source models: physical fields, table-content understanding evidence, source filters, sample rows, and metadata.
 4. Logical models: business objects, keys, relationships, grain, joins.
 5. Response/view models: API/frontend fields, types, units, numeric display contracts, null rules, examples.
 5a. Source replacement compatibility: old source, new source, unchanged response fields, additive fields, transform/default/null rules, and breaking/versioning decisions.
 5b. Prototype mock-to-real model mapping when applicable: mock endpoint/local dataset, component data key, consuming slot/component, replacement API/source model, metric/source row, filter/action/export/detail/conclusion ownership, and unresolved `GAP-*`.
 6. Data-version/snapshot semantics: snapshot role, business time, snapshotDate/latestPeriod, loadBatch, dataVersion, freshness, invalidation/backfill, exposing response metadata, source fields/partitions, filter predicate mapping, and reuse rules when canonical/shared.
-7. Filter-support completeness: option source, row grain, fields, default/non-default states, empty/permission states, resolver/API branches.
+7. Filter-support completeness: request param, source predicate field, option source, row grain, fields, default/non-default states, empty/permission states, resolver/API branches.
 8. Metrics: formulas, dimensions, baselines, thresholds, numeric display contracts, reconciliation.
 9. Transformation mapping: source -> logical -> response.
 10. Security rules: sensitivity, masking, field-level permission, no-permission behavior.
@@ -45,6 +48,8 @@ Use this structure for the 数据模型文件:
 ## Quick Quality Gate
 
 - Every response/view field traces to a source field, formula, or pending item.
+- Every table-backed model has table-content evidence before API implementation.
+- Every filter that changes rows maps from request param to source predicate.
 - Existing response/view contracts remain stable when source tables or data sources change; any drift is blocked unless explicitly versioned.
 - Prototype-derived response/view models cannot be ready until all mock endpoints/local datasets/component data keys are covered by replacement rows, source mappings, or visible `GAP-*`.
 - Additive fields are named and documented by convention before downstream API/front-end/test use.
@@ -52,6 +57,7 @@ Use this structure for the 数据模型文件:
 - Data-version and snapshot semantics are explicit when current/latest/snapshot endpoints exist.
 - Data-version and scope params map to source fields, partitions, logical filters, precompute keys, or cache keys before response/view models are declared ready.
 - Filter-support completeness is documented before downstream `filterFields`, query params, or resolver params are accepted.
+- Simple source-query models avoid hidden aggregation/processing unless a source-aligned summary table or derived/precompute gap is explicit.
 - Source ownership, refresh cadence, and permission are explicit.
 - Model IDs and API response model names are stable for downstream API inventory, documentation, frontend integration, and testing artifacts.
 - Model design reasonableness is checked; unresolved `P0`/`P1` `DESIGN-*` findings keep affected models `partial` or `blocked`.

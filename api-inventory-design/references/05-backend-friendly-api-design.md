@@ -4,6 +4,8 @@ Use this reference when an API inventory or API document should make backend imp
 
 Backend-friendly does not mean fewer endpoints at any cost. It means endpoint boundaries, request models, response models, and lifecycle patterns can flow through reusable backend layers instead of creating one custom controller and one custom query for every page widget.
 
+For interface implementation, backend-friendly starts with the minimal source-aligned path: understand each involved table's content first, expose filters as request params, and query rows without hidden aggregation or processing.
+
 ## Core Principle
 
 Every data-bearing API should declare its backend reuse pattern:
@@ -17,6 +19,21 @@ Every data-bearing API should declare its backend reuse pattern:
 - `health/status`: data freshness, source readiness, job status, export status, or service health.
 
 An API row without a reuse pattern is harder for backend teams to implement consistently.
+
+## Minimal Source-Query Default
+
+When an API is table-backed, mark its default implementation subtype as `source-query-simple` unless a documented contract requires a derived/summary endpoint.
+
+`source-query-simple` means:
+
+- one authoritative table/view/fixture/upstream object by default;
+- table content, row grain, keys, filter fields, representative rows, and result bounds are known before implementation;
+- every client-visible filter is a path/query/body param mapped to a source predicate;
+- backend-injected tenant, user, role, org/data-permission, and masking scope is documented separately;
+- repository access performs projection, predicates, stable order, and bounded pagination only;
+- response mapping uses aliases/serializers to preserve stable API field names.
+
+Do not put `GROUP BY`, `HAVING`, aggregate/window functions, exact total counts, totals, rankings, formula calculation, chart-series derivation, or multi-table synthesis into a simple source-query row. If the page needs those outputs, query an existing source-aligned summary table or record a derived/precompute design gap.
 
 ## Reusable Backend Pipeline
 
@@ -40,6 +57,7 @@ The API contract should provide enough information for each layer:
 - stable request model;
 - backend-defaulted and backend-injected params;
 - field/metric/filter/sort codes instead of raw SQL or arbitrary expressions;
+- table-content evidence and request-param-to-source-field mapping for source-query APIs;
 - reusable response model;
 - cache/precompute and pagination/export behavior;
 - error, empty, no-permission, timeout, and degraded states.
@@ -55,6 +73,8 @@ Prefer reusable request shapes:
 - `ActionRequest`: target ID, action type, payload, idempotency key, and reason/comment when needed.
 
 Do not design endpoint-specific parameter names for the same concept unless the project already has a standard. Reusing parameter names lets backend validators, query builders, cache-key builders, and tests be shared.
+
+Every filter that changes business rows must be part of the request model. Hidden controller defaults, UI-only filter state, previous-call memory, or hardcoded source predicates keep the API row `partial` or `blocked`.
 
 ## Response Model Rules
 
@@ -89,6 +109,8 @@ Split endpoints when backend reuse would be harmed:
 
 Avoid both extremes: a broad page-level API that forces frontend splitting, and dozens of tiny custom endpoints that each require a one-off controller/query.
 
+Do not merge endpoints merely to compute aggregate widgets from raw rows inside a controller/service. If widgets need different grains, query the correct source-aligned table for each grain or open a derived/summary model design item.
+
 ## Metadata-Driven Report APIs
 
 For configurable or repeated report patterns, prefer metadata-driven APIs:
@@ -120,6 +142,9 @@ Every production-bound API row should answer:
 - Which common response model/envelope does it reuse?
 - Which query context, metadata, permission, cache, pagination, export, or action service can handle it?
 - Which fields/metrics/filters/sorts are stable codes owned by backend metadata?
+- For table-backed APIs, which table content evidence proves the source, grain, filters, and bounds?
+- Are all client-visible filters request params mapped to source predicates?
+- Is the endpoint query-only, or is there an approved derived/summary exception?
 - Which parts are intentionally custom, and why?
 
 If the answer is "new custom controller and custom SQL for this one widget", record a `DESIGN-*` finding unless the endpoint is truly one-off and low risk.
@@ -134,3 +159,6 @@ If the answer is "new custom controller and custom SQL for this one widget", rec
 - Frontend sends raw SQL, arbitrary column expressions, arbitrary sort strings, or permission scope.
 - API response includes business formulas that cannot trace to a reusable metric definition.
 - Endpoint split/merge decisions are made only to reduce HTTP request count, not backend query or contract reuse.
+- Table-backed endpoint is planned without table-content evidence.
+- Filters are hidden outside request params.
+- Simple table retrieval endpoint hides aggregation, totals, rankings, formulas, exact counts, multi-table synthesis, or broad in-memory processing.

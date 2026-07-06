@@ -1,4 +1,4 @@
 interface:
   display_name: "性能优化"
-  short_description: "优化报表 API、SQL、缓存、连接池、异常释放、分页、导出、前端首屏、图表和大表格渲染性能。"
-  default_prompt: "Use $performance-optimization to diagnose and improve SQL, API, cache, pagination, export, connection-pool lifecycle including ApiError/timeout exception release, frontend loading, chart, and table rendering performance."
+  short_description: "优化报表 API、SQL、缓存、连接池、异常释放、分页、导出、前端首屏、图表和大表格渲染性能，同时保持最简接口边界。"
+  default_prompt: "Use $performance-optimization to diagnose and improve SQL, API, cache, pagination, export, connection-pool lifecycle including ApiError/timeout exception release, frontend loading, chart, and table rendering performance. For simple table-backed APIs, preserve source-query-simple behavior: table content first, filters as request params/source predicates, and no hidden joins, aggregation, exact counts, formulas, totals, rankings, cache-derived hidden state, or broad post-processing unless a derived/summary/precompute exception is documented."

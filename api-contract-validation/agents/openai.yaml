@@ -1,4 +1,4 @@
 interface:
   display_name: "API 契约校验"
-  short_description: "核对 API 文档、前端期望、后端路由、mock、OpenAPI、数据库/上游样例和运行响应之间的字段级契约差异，覆盖数值精度/单位。"
-  default_prompt: "Use $api-contract-validation to compare API contract evidence across docs, frontend expectations, backend routes, mocks, OpenAPI schemas, source samples, runtime responses, and numeric precision/display semantics."
+  short_description: "核对 API 文档、前端期望、后端路由、mock、OpenAPI、数据库/上游样例和运行响应之间的字段级契约差异，覆盖数值精度/单位和最简接口证据。"
+  default_prompt: "Use $api-contract-validation to compare API contract evidence across docs, frontend expectations, backend routes, mocks, OpenAPI schemas, source samples, runtime responses, and numeric precision/display semantics. For table-backed APIs, verify table-content evidence, filters as request params mapped to source predicates, source-query-simple boundaries, and absence of hidden joins, aggregation, exact counts, formulas, totals, rankings, or broad processing unless a derived/summary exception exists."
