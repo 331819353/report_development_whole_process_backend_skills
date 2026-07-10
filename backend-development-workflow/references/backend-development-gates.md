@@ -4,6 +4,8 @@ Detailed backend/data-service constraints, required outputs, and readiness gates
 
 ## Reinforced Constraints
 
+- Apply `00-prototype-downstream-handoff-contract.md` before prototype-derived API design, documentation, implementation, repair, or readiness. Require the fixed PRD core/current child-backend PRD, strict validator evidence, prototype/version/source authority, current data summary, and bounded consumption/trace/replacement matrices.
+- Apply `01-standalone-new-project-contract.md` when no prototype or existing backend target exists. Prototype absence is not a blocker; resolve a writable service root, select the stack, and create service/API/source/verification matrices.
 - Data-service design mode must consume upstream technical-solution decisions when available: architecture blueprint, ADR, implementation roadmap, API清单, 数据模型文件, runtime/NFR, permission strategy, and gaps. If missing, mark the design `partial` or create `GAP-*`.
 - For default backend/data-service work without an authoritative existing stack or user-specified override, use `Python + Flask + SQLAlchemy + database/upstream connection pools + Redis`. When SSO or multiple databases are in scope, also apply `$python-flask-sso-multidatabase-backend`. Flask owns HTTP routing and service composition; SQLAlchemy owns engine/session management and parameter-bound SQL/ORM access; connection pools own database/upstream resource control; Redis owns cache/precompute/session-like transient state, hot query acceleration, stampede protection, distributed locks where appropriate, idempotency keys, job progress, and rate/concurrency support when needed.
 - Python/Flask SSO projects must define the app factory, config/env profiles, versioned Blueprints, unified response/error envelope, SSO middleware, permission middleware, service layer, repository layer, `app/db` engine/session registry, schemas, utils, SQL directories, test layout, WSGI/Gunicorn/Docker runtime, and `.gitignore`/secret handling before implementation is considered ready.
@@ -35,12 +37,13 @@ Detailed backend/data-service constraints, required outputs, and readiness gates
 
 ## Workflow
 
-1. Choose mode: `data-service-design`, `api-documentation`, `backend-implementation`, or `backend-repair-debug`.
-2. Inspect technical solution, project stack, API inventory, data model, env/auth notes, targeted reading rows, source evidence, existing routes, runtime traces, and frontend contracts. If no existing backend stack is authoritative, align the solution or implementation to the default `Python + Flask + SQLAlchemy + connection pools + Redis` stack and load `$python-flask-sso-multidatabase-backend` when applicable.
-3. When the scope originates from the report prototype/PRD workflow, inventory `prd/execution/prd-targeted-reading-analysis.md`, `prd/execution/*`, `docs/prototype-data-summary.md`, `Mock API To HTTP API Replacement Matrix`, `Metric To Interface / Source Mapping`, component data keys, filters, interactions, toolbar actions, exports, details, and conclusion-rule inputs before endpoint design.
+1. Classify `backendEntryMode`, then choose mode: `data-service-design`, `api-documentation`, `backend-implementation`, or `backend-repair-debug`.
+2P. For prototype-derived work, build the prototype baseline and consumption/trace/replacement matrices before endpoint design.
+2S. For standalone new projects, build `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, and `implementationVerificationMatrix`, then initialize the real service.
+2E. For existing projects, inspect and preserve stack, API/error/auth/source/runtime conventions before changes.
 4. Produce a backend targeted-reading consumption note: consumed `SRC-*` / `READ-*` rows, backend-relevant authority decisions, non-authority materials, affected API/model/runtime/logging/security rows, and unresolved `ENTRY-*` / `GAP-*`.
 5. Run `$quality-gate-validation` when targeted reading, docs, models, routes, source samples, runtime traces, frontend contracts, or upstream technical-solution decisions conflict.
-6. Before endpoint design or route edits, apply `minimal-interface-implementation-principles.md`: create table-content understanding evidence, request-param-to-source-field mapping, query-only boundary proof, and gaps for missing content/filter/permission facts.
+6. Before endpoint design or route edits, apply `minimal-interface-implementation-principles.md`: create `tableContentUnderstandingMatrix`, `requestParamPredicateMatrix`, query-only boundary proof, and gaps for missing content/filter/permission facts.
 7. In `data-service-design` mode, define service boundary, layered architecture, runtime model, metadata/query chain, source-adapter strategy, compatibility strategy, security/permission strategy, observability, deployment/rollback, and handoff readiness. Use `references/data-service-design-template.md`.
 8. In `api-documentation` mode, use `$api-documentation-design` and mark partial/blocked endpoints visibly.
 9. In `backend-implementation` mode, design transformations with `$data-transformation-adapter-design`, validate contracts with `$api-contract-validation`, record gaps with `$gap-ledger-management`, and read/create sidecar code ledgers before each backend code edit.
@@ -60,6 +63,7 @@ Detailed backend/data-service constraints, required outputs, and readiness gates
 
 - Mode, inputs, upstream technical-solution linkage, and project stack.
 - Targeted reading consumption when prototype/PRD-derived: `prd/execution/prd-targeted-reading-analysis.md` status, consumed `SRC-*` / `READ-*` rows, backend-relevant findings, non-authority notes, and open `ENTRY-*` / `GAP-*`.
+- Entry mode and, for standalone work, the standalone baseline plus service/API/source/predicate/verification matrices.
 - Data-service design summary: service boundary, design scope, selected architecture, backend stack decision, readiness, and blockers.
 - Backend stack decision: Python/Flask, connection-pool ownership, Redis/cache role, and override reason if not using the default stack.
 - Python Flask SSO/multi-database project contract when applicable: directory structure, app factory, config/env vars, SSO token/clientId headers, user-role-permission mapping, 401/403 behavior, database role map, SQLAlchemy engine/session registry, repository ownership, SQL directory ownership, dependencies, testing, and deployment files.
@@ -71,6 +75,7 @@ Detailed backend/data-service constraints, required outputs, and readiness gates
 - Backend logging contract: logger config/env vars, structured format, requestId/traceId propagation, required fields, redaction rules, log levels, request/auth/validation/query/cache/pool/export/error log points, slow-query/report thresholds, sampling/retention, and examples of safe log lines.
 - Code file ledger proof when implementation or repair changed code: each changed backend code file, sidecar ledger path, pre-change read/create status, appended version, route/service/query code ranges or stable anchors, affected API/env/source/permission/logging contracts, and verification.
 - Prototype-to-backend handoff proof when applicable: consumed targeted reading rows, consumed PRD execution files, `docs/prototype-data-summary.md` freshness, replacement-matrix coverage, metric/source/interface mapping, component data-key coverage, filter/action/export/detail/conclusion-rule API ownership, and unresolved `ENTRY-*` / `GAP-*`.
+- Completed-prototype baseline and trace: strict validator, current child-backend PRD, prototype/project/version, `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, `mockToRealBackendMatrix`, `tableContentUnderstandingMatrix`, and `requestParamPredicateMatrix`.
 - Backend-friendly API design or implementation plan: endpoint families, common request/response models, service-layer mapping, error envelope, health/status endpoints, and custom endpoint exceptions.
 - Numeric precision/display contract: metric fields, value types, raw/display units, display scale, screen/tooltip/export precision, rounding mode, formula precision policy, null/zero/denominator-zero behavior, negative-zero handling, and source-to-response compatibility notes.
 - Data-vs-presentation boundary: which fields are raw/structured data, which metadata supports frontend display, which text is server-owned by exception, and which conclusions/copy must be composed by frontend.
@@ -110,5 +115,7 @@ Detailed backend/data-service constraints, required outputs, and readiness gates
 - Do not publish broad unbounded list endpoints without pagination/performance notes.
 - Do not claim filter-bound backend/API readiness when the data completeness check was skipped or only a single default snapshot exists for an affecting filter.
 - Do not claim prototype-derived backend/API readiness when `prd/execution/prd-targeted-reading-analysis.md`, `docs/prototype-data-summary.md`, or the PRD execution files are missing/stale/generic, when targeted reading rows are not consumed, when mock endpoints/local datasets/component data keys lack replacement rows, or when conclusion/filter/action/export/detail payloads cannot trace to backend-owned APIs or explicit `GAP-*`.
+- Do not claim prototype-derived backend/API readiness when `00-prototype-downstream-handoff-contract.md` is unsatisfied, an accepted stable ID lacks docs/source/code/test trace, or UI layout is encoded into endpoint boundaries.
+- Do not block `standalone-new-project` because prototype PRD, configured prototype project, prototype data summary, or mock-replacement rows do not exist. Judge it with `01-standalone-new-project-contract.md`.
 - Do not hide source/formula/auth/env gaps in code comments only.
 - Do not claim production readiness without source mode, auth/config, health, contract, performance, deployment/rollback, observability, and testing handoff evidence.

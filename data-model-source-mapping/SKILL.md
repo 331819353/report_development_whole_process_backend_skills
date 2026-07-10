@@ -57,6 +57,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 For PRD/prototype-derived report mapping, read `prd/execution/prd-targeted-reading-analysis.md` before source/model decisions. The model file must cite consumed `SRC-*` / `READ-*` rows, identify authoritative vs non-authoritative source materials, and link `ENTRY-*` / `GAP-*` to source tables, grains, metric formulas, response fields, data-version fields, filter completeness, permission scope, and quality rules. Do not mark source/model rows `ready` when targeted reading is missing, generic, or not reflected in lineage.
 
+For completed-prototype handoff, also load `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md`. Preserve accepted `MET-*`, `OBJ-*`, `DATA-DESIGN-*`, `API-*`, `FILTER-*`, `INT-*`, and `RULE-*` IDs through source/logical/response mappings and link every physical source to `tableContentUnderstandingMatrix` evidence.
+
 ## Workflow
 
 0. Check source authority.

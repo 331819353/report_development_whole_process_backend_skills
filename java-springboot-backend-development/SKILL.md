@@ -15,6 +15,8 @@ Use this copy only inside the backend/data-service skill bundle. Treat frontend,
 
 Use this skill as the architecture and engineering baseline for Java backend development when the target should follow Java 17+ and Spring Boot 3.x conventions.
 
+This skill can initialize a new backend directly and does not require prototype artifacts. When invoked for `backendEntryMode = standalone-new-project`, apply `backend-development-workflow/references/01-standalone-new-project-contract.md`, create the actual runnable Spring Boot project, and carry its service/API/source/predicate/verification matrices through implementation and handoff.
+
 It complements `$backend-development-workflow`: load this skill when the backend target is Java/Spring Boot, or when the user asks for Spring Boot project structure, REST API implementation, Spring Security/JWT/SSO, unified response, exception handling, environment profiles, Maven/Docker commands, or directory conventions. Use `$haier-sso-integration` for Haier IAM/IAMA tokenUrl, code exchange, token check, `Access-Token`, `Application-Key`, and clientId rules; use `$api-documentation-design` for formal API docs, `$api-contract-validation` for producer/consumer contract checks, `$performance-optimization` for SQL/Redis/pool tuning, and `$runtime-url-smoke-test` for live URL verification.
 
 ## Reference Map

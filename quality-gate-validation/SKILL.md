@@ -21,6 +21,8 @@ It is a gate, not a dumping ground for domain implementation. Load the owning sk
 
 Primary shared gates:
 
+- `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md` for completed-prototype baseline, backend stable-ID/source trace, mock replacement, table understanding, request predicates, minimal-interface boundary, and readiness.
+- `backend-development-workflow/references/01-standalone-new-project-contract.md` for greenfield backend stack/project setup, service/API/source/predicate contracts, vertical-slice implementation, runtime evidence, and readiness without prototype prerequisites.
 - `references/preflight-understanding-gate.md`
 - `references/anti-laziness-execution-gate.md`
 - `references/entry-input-consistency-gate.md`
@@ -51,7 +53,8 @@ Primary shared gates:
 | Environment profile | Runtime profiles, URLs, proxy/CORS, auth, deployment, and rollback must be separated. |
 | Delivery pipeline | Handoffs must stay aligned across requirement, prototype, model, API, backend, frontend, test, release, and retest artifacts. |
 | Targeted reading analysis | Executable PRD and downstream work consume `prd/execution/prd-targeted-reading-analysis.md`, including source material rows, stage reading plan, evidence-to-decision trace, non-authority items, and `ENTRY-*` / `GAP-*`. |
-| Prototype handoff consumption | Downstream technical/backend/frontend/testing artifacts consume `report-prd-document-generation`, `report-prototype-implementation-workflow`, PRD execution files, `docs/prototype-data-summary.md`, replacement rows, component data keys, and metric/source/interface mappings. |
+| Prototype handoff consumption | Backend artifacts record strict PRD validation, fixed core/current child-backend PRD, prototype/version/source authority, data summary, stable-ID consumption, API/source/code/test trace, mock replacement, table understanding, request predicates, and runtime verification. |
+| Standalone backend project | New backend work records entry mode, writable root, stack/override, service boundaries, API contracts, source-object understanding, request predicates, implementation verification, auth/env/runtime, and gaps without requiring prototype artifacts. |
 | Code change ledger | Changed code needs file-level traceability, pre-change read evidence, code ranges, verification, and rollback/blocker notes. |
 | Backend logging | Backend/data-service readiness depends on diagnosable structured logs. |
 | Numeric precision/display | Metric-bearing artifacts need consistent value type, units, scale, precision, rounding, null/zero behavior, and formatter ownership. |
@@ -82,6 +85,8 @@ Primary shared gates:
 - Rule strength audit when a standard/spec contains advisory wording that may affect correctness, runtime fit, renderer ownership, data trust, filters, permissions, accessibility, or readiness.
 - Targeted reading analysis findings when PRD, implementation, QA, or handoff is in scope: source material inventory, stage reading plan, evidence-to-decision trace, non-authority items, consumed `SRC-*` / `READ-*` rows, and open `ENTRY-*` / `GAP-*`.
 - Prototype handoff consumption findings when downstream stages are in scope: PRD execution bundle, `docs/prototype-data-summary.md`, replacement matrix, metric/source/interface mapping, component data-key coverage, filter/action/export/detail/conclusion ownership, downstream artifact/version, and open `GAP-*`.
+- Prototype-derived backend findings: `prototypeBaselineRecord`, `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, `mockToRealBackendMatrix`, `tableContentUnderstandingMatrix`, `requestParamPredicateMatrix`, and API/source/code/test/runtime evidence.
+- Standalone backend findings: `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, `implementationVerificationMatrix`, runtime URL, and `GAP-BE-*`.
 - Minimal interface implementation findings when backend/API implementation is in scope: table-content evidence, filters-as-request-params mapping, source-query-simple boundary, hidden aggregation/processing findings, and derived/summary exceptions or gaps.
 - Findings table with ID, severity, expected, actual, impact, owner, required action, and readiness impact.
 - Readiness result: `ready`, `partial`, or `blocked`.
@@ -98,8 +103,10 @@ Primary shared gates:
 - Do not mark Haier/enterprise report or dashboard UI `ready` when report-specific checks pass but inherited Haier application UI baseline checks are missing or treated as optional.
 - Do not mark a requested modern SaaS / BI Dashboard / UI Kit page `ready` when the positive style contract is missing, the layout is a generic SaaS shell, components are piled up, charts are overweight, or hierarchy is flat.
 - Do not mark `ready` when governed report metrics lack numeric display contracts or show inconsistent units, decimals, percent scale, rounding, tooltip/export precision, null/zero/denominator-zero behavior, or formatter ownership across design/API/frontend/backend/export.
-- Do not mark executable PRD, prototype implementation, downstream implementation, QA, or handoff `ready` when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, or not consumed by the affected stage.
+- For PRD/prototype-derived scope, do not mark executable PRD, prototype implementation, downstream implementation, QA, or handoff `ready` when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, or not consumed by the affected stage. This blocker does not apply to standalone backend projects with no PRD/prototype authority.
 - Do not mark downstream prototype-derived work `ready` when the PRD execution bundle, `docs/prototype-data-summary.md`, replacement rows, metric/source/interface mappings, component data keys, filter/action/export/detail/conclusion ownership, or downstream version/evidence chain is missing, stale, or untested.
+- Do not mark prototype-derived backend work `ready` when `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md` is not satisfied.
+- Do not apply prototype-handoff blockers to `standalone-new-project`; judge it with `backend-development-workflow/references/01-standalone-new-project-contract.md`.
 - Do not mark backend/API implementation `ready` when table-backed interfaces lack table-content evidence, client-visible filters are not request params mapped to source predicates, or simple retrieval endpoints hide joins, aggregation, exact counts, formulas, totals, rankings, or broad in-memory processing.
 - Do not use this skill to restate full domain rules; cite the loaded references and summarize the blocking evidence.
 - Load `shared-quality-gate-blockers.md` before final readiness decisions or when a finding can block delivery.

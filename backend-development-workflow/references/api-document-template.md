@@ -10,7 +10,12 @@ Use this structure when a backend workflow must output interface documentation.
 - Base URL:
 - Auth mode:
 - Mode: data-service-design / API documentation / implementation / repair
+- Backend entry mode: standalone-new-project / existing-project / prototype-derived
 - Upstream technical solution: ARC-* / ADR-* / API-* / LGM-* / NFR-* / GAP-*
+- Prototype baseline/version: none or repository/commit/project/`DELIVERY_INDEX.md`
+- Strict PRD validation and `prd-child-backend.md` status: none / ready / partial / blocked
+
+For `standalone-new-project`, use `none` for prototype-only metadata and include `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, source/predicate evidence, and implementation verification instead.
 
 ## 1a. Data-Service Design Summary
 
@@ -30,10 +35,19 @@ Use this structure when a backend workflow must output interface documentation.
 | File | Format | Role | Key Fields | Parsing Notes |
 | --- | --- | --- | --- | --- |
 
+### Prototype Contract Consumption
+
+| Upstream file/ID | Authority | API/source/code target | Request/response impact | Verification | Status/gap |
+| --- | --- | --- | --- | --- | --- |
+
+Link this table to `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, and `mockToRealBackendMatrix` when the API is prototype-derived.
+
 ## 3. Data Sources
 
 | Source | Type | Used By APIs | Key/Join Fields | Freshness | Fallback |
 | --- | --- | --- | --- | --- | --- |
+
+Add `tableContentUnderstandingMatrix` and `requestParamPredicateMatrix` before documenting table-backed endpoint readiness.
 
 ## 4. Data Models
 

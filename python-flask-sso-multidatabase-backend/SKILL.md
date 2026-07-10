@@ -15,6 +15,8 @@ Use this copy only inside the backend/data-service skill bundle. Treat frontend,
 
 Use this skill as the architecture baseline for Python backend development when the project should follow a Flask + SQLAlchemy + enterprise SSO + multi-database structure.
 
+This skill can initialize a new backend directly and does not require prototype artifacts. When invoked for `backendEntryMode = standalone-new-project`, apply `backend-development-workflow/references/01-standalone-new-project-contract.md`, create the actual runnable Flask project, and carry its service/API/source/predicate/verification matrices through implementation and handoff.
+
 It complements `$backend-development-workflow`: load this skill when the backend target should follow the Python/Flask architecture, SSO token validation, SQLite/MySQL/Oracle/StarRocks role split, repository/service layering, and deployment conventions. Use `$haier-sso-integration` for Haier IAM/IAMA endpoint details, `$api-documentation-design` for formal API docs, and `$performance-optimization` for SQL/cache/pool tuning.
 
 ## Reference Map

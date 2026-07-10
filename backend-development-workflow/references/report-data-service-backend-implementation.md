@@ -2,6 +2,8 @@
 
 Use this shared reference whenever a report, BI, dashboard, or data-visualization backend/data service is designed, documented, implemented, validated, or reviewed for production readiness.
 
+For completed-prototype handoff, first apply `00-prototype-downstream-handoff-contract.md`. Use its fixed PRD/child-backend baseline, source-authority decisions, stable-ID consumption, backend trace/replacement matrices, and minimal-interface evidence before applying broader query-service architecture.
+
 This reference is about the report backend as a controlled query service. It complements:
 
 - `$performance-optimization` for OLAP business process, grain, fact/dimension, metric, serving-model design, SQL query shape, execution-plan risk, concurrency, Redis/cache/precompute, pools, async work, timeout, limits, and observability.
@@ -481,6 +483,9 @@ Mark report data-service backend readiness:
 - `blocked`: the service would accept unsafe SQL/source inputs, has unknown source authority or metric口径, implements table-backed interfaces without table-content evidence, hides client-visible filters outside request params, performs unapproved aggregation/processing in simple retrieval endpoints, relies on undocumented data-bearing endpoint-to-endpoint runtime dependencies, lacks data-version context or snapshot reuse rules for snapshot/latest-period semantics, cannot show how data-version/business/permission scope params constrain source/precompute/cache/snapshot queries, lacks permission/tenant isolation, lacks bounded pagination/export, keeps risky heavy work synchronous, has no cache-permission safety, lacks required audit for sensitive data, or cannot document how global filters/query limits execute before response construction.
 
 ## Handoff Evidence
+
+- `prototypeBaselineRecord`, `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, and `mockToRealBackendMatrix` for prototype-derived services.
+- `tableContentUnderstandingMatrix` and `requestParamPredicateMatrix` for every involved table/view/fixture/upstream object.
 
 Backend/API documentation, implementation notes, and validation reports should include:
 

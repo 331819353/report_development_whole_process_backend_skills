@@ -17,6 +17,8 @@ Use this skill to compare API contracts across producer and consumer evidence. I
 
 It validates behavior and records differences. It does not design a new API inventory, write full API documentation, or implement backend/frontend code unless another workflow asks for that.
 
+For completed-prototype handoff, load `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md` and validate affected `prototypeContractConsumptionMatrix`, `mockToRealBackendMatrix`, `tableContentUnderstandingMatrix`, and `requestParamPredicateMatrix` rows against docs, code, source samples, runtime responses, and frontend consumers.
+
 ## Reference Loading
 
 - Backend/source authority and runtime validation: `references/backend-contract-sources-and-authority.md`, `references/backend-response-and-request-validation.md`, `references/backend-runtime-source-validation.md`

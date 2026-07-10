@@ -1,6 +1,6 @@
 ---
 name: backend-development-workflow
-description: "[后端阶段] 本阶段版本仅服务后端/数据服务设计、API文档/契约、接口实现、运行验证和后端交付；不承接原型设计、前端代码或测试执行。运行数据服务/后端阶段，把技术方案、API清单、数据模型、prototype 输出的 prd/execution/prd-targeted-reading-analysis.md、docs/prototype-data-summary.md、Mock API To HTTP API Replacement Matrix 和 Metric To Interface And Source Mapping 转成数据服务设计、API文档，或在用户明确要求时实现后端接口和本地服务。用户提到后端、服务端、数据服务、接口实现/接口开发、API文档、默认后端技术栈、Python/Flask、Java/Spring Boot、连接池/Redis、快照接口、snapshotDate/dataVersion/loadBatch、筛选前数据完整性、数据库/上游API接入、响应字段兼容、新增字段命名、鉴权中间件、Haier IAMA、启动后端、本地后端URL、mock转真实接口时触发。"
+description: "[后端阶段] 独立承担真实后端/数据服务项目的新建、设计、API文档、接口实现、运行验证和交付，不要求必须先有 prototype。支持 standalone-new-project、existing-project、prototype-derived 三种入口；有 prototype 时消费其 PRD/数据契约，无 prototype 时直接从用户需求、API预期、数据源、权限和环境约束初始化并实现服务。用户提到新建后端项目、后端、服务端、数据服务、接口实现/开发、API文档、Python/Flask、Java/Spring Boot、数据库/上游API、连接池/Redis、鉴权、Haier IAMA、启动后端、本地URL或mock转真实接口时触发。"
 ---
 
 # Backend Development Workflow
@@ -13,14 +13,16 @@ Use this copy only inside the backend/data-service skill bundle. Treat frontend,
 
 ## Positioning
 
-Use this workflow for the backend/data-service stage: convert a technical solution, API inventory, data model, source mapping, executable PRD data/API contract, or prototype-data-summary handoff into a backend design, API documentation, implementation plan, or runnable backend service when explicitly requested.
+Use this workflow as the independent entry point for real backend/data-service development. It can initialize a new runnable service from user requirements and source/API evidence, continue an existing backend, or consume a completed prototype handoff. A prototype is one possible input, never a universal prerequisite.
 
 It owns data-service runtime boundaries, route/service/query layering, contracts, transformation adapters, pools/cache/precompute, permissions, logging/observability, environment, deployment, and backend readiness.
 
-For report/dashboard/cockpit/detail/analysis/self-service work, `prd/execution/prd-targeted-reading-analysis.md` and `docs/prototype-data-summary.md` are first-class backend inputs. Targeted reading rows must decide which source materials are authoritative, what not to infer, and which `ENTRY-*` / `GAP-*` rows affect API/model choices. The data summary must drive mock-to-real endpoint replacement, component-ready response shape, filter params, interaction payloads, conclusion-rule inputs, backend method candidates, and gaps. Backend work must not derive production APIs from UI fields alone.
+For `prototype-derived` work, targeted reading and prototype data summary are first-class inputs. For `standalone-new-project`, source objects, representative content, consumer/API expectations, business rules, permissions, and environment constraints are the authority. In every mode, backend work must not derive production APIs from UI labels alone.
 
 ## Reference Files
 
+- `references/00-prototype-downstream-handoff-contract.md` is mandatory for prototype-derived backend work. It defines the fixed PRD/child-backend baseline, prototype version, stable-ID consumption, source-authority rules, mock replacement, configuration trace, minimal-interface boundary, and readiness evidence.
+- `references/01-standalone-new-project-contract.md` is mandatory when no prototype or existing backend target exists. It defines greenfield stack/project setup, service/API/source matrices, vertical-slice implementation, tests, runtime, and readiness.
 - `references/data-service-design-template.md` for backend/data-service design output.
 - `references/api-document-template.md` for API documentation.
 - `references/report-data-service-backend-implementation.md` for implementation details.
@@ -57,14 +59,16 @@ Decide endpoint families, request context, response envelope, service/query/sour
 ## Workflow
 
 1. Run the Preflight understanding gate before backend design, API docs, implementation, or repair. Name the requested stage, evidence inventory, source/API/model/frontend authority order, affected contracts, owning skills, missing evidence, and start decision.
-2. Inventory technical solution, API inventory, model/source mapping, `prd/execution/prd-targeted-reading-analysis.md`, upstream PRD data/API files, `docs/prototype-data-summary.md`, Mock API To HTTP API Replacement Matrix, Metric To Interface And Source Mapping, component data keys, filters, interactions, conclusion inputs, metric口径, numeric display/precision contracts, permissions, SSO/token header contract, database role map, env/auth, and existing code. Use `$metric-number-display-contract` for numeric semantics and `$environment-profile-contract` for test/production runtime profiles when in scope.
-3. For PRD/prototype-derived backend work, consume targeted reading rows before endpoint/model design: cite relevant `SRC-*`, `READ-*`, `ENTRY-*`, and `GAP-*` rows, decide source authority, note non-authority materials, and connect each backend decision to a row or blocker.
+2. Classify `backendEntryMode` as `standalone-new-project`, `existing-project`, or `prototype-derived`. Prototype absence must select the standalone path when the requested deliverable is backend development; it must not redirect the task to prototype generation.
+3P. For `prototype-derived`, load `references/00-prototype-downstream-handoff-contract.md`, create the prototype baseline and stable-ID consumption/trace/replacement matrices, and preserve handoff ownership.
+3S. For `standalone-new-project`, resolve the writable root, load `references/01-standalone-new-project-contract.md`, create `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, and `implementationVerificationMatrix`, then initialize the real service.
+3E. For `existing-project`, inspect and preserve the authoritative stack, modules, response/error contracts, auth, persistence, migrations, tests, configuration, and runtime conventions; create only missing bounded planning rows.
 4. Run quality gates when targeted reading, source/API/model/frontend expectations conflict.
 5. Run the anti-laziness execution gate from `$quality-gate-validation` for implementation, repair, documentation, or acceptance steps. Keep `LAZY-*` findings visible until evidence closes them.
-6. Apply the minimal interface implementation principles before endpoint design or code edits. For every involved table/view/fixture/upstream object, inspect table content, row grain, keys, filter fields, sample rows, result bounds, and gaps. Treat client-visible filters as request params. Default repository access to projection + predicates + stable order + pagination; do not add hidden joins, aggregation, formulas, totals, rankings, exact counts, broad in-memory filtering, or response reshaping for simple table retrieval.
-7. Define data-service design: boundaries, layers, request context, response model, numeric metadata contract, data-version contract, permission scope, SSO/auth flow, database ownership, cache/precompute, and observability. For prototype-derived work, create a mock-to-real mapping for every affected mock endpoint/data source/component data key before endpoint design. Load `$python-flask-sso-multidatabase-backend` when Python/Flask SSO or multi-database structure is in scope; load `$java-springboot-backend-development` when Java/Spring Boot structure, Spring Security/JWT/SSO, Maven/Docker, or Profile conventions are in scope.
+6. Apply the minimal interface implementation principles before endpoint design or code edits. For every involved table/view/fixture/upstream object, create `tableContentUnderstandingMatrix` from representative content, row grain, keys, filter fields, permission fields, result bounds, nulls, and gaps; create `requestParamPredicateMatrix`; default repository access to projection + predicates + stable order + bounded pagination. Do not add hidden joins, aggregation, formulas, totals, rankings, exact counts, broad in-memory filtering, or response reshaping for simple table retrieval.
+7. Define data-service design: boundaries, layers, request context, response model, numeric metadata contract, data-version contract, permission scope, SSO/auth flow, database ownership, cache/precompute, and observability. Use mock-to-real mapping only for prototype/mock-derived scope; use `apiContractMatrix` and source matrices for standalone scope. Load the Python/Flask or Java/Spring Boot child skill according to stack selection.
 8. Produce or update API documentation through `$api-documentation-design`.
-9. Validate contracts against frontend expectations, targeted reading rows, table-content evidence, source samples, OpenAPI, mocks, prototype-data-summary rows, PRD data/API rows, routes, and runtime responses.
+9. Validate contracts against the active entry mode's authority: prototype rows for `prototype-derived`, `apiContractMatrix` plus source evidence for `standalone-new-project`, or existing docs/code/runtime behavior for `existing-project`.
 10. Design transformation adapters for source-to-response and response-to-view-model compatibility only after proving the simple query boundary is insufficient or the mapping is only field-alias/serializer compatibility. Do not use adapters to hide business aggregation or missing filter params.
 11. If implementation is requested, edit backend code with `$code-change-ledger-management` discipline and preserve existing project patterns.
 12. Configure pools, Redis/cache, timeouts, errors, logging, health checks, and env profiles. Use `$redis-cache-design-patterns` when Redis is named and `$environment-profile-contract` when handoff profiles matter.
@@ -74,8 +78,9 @@ Decide endpoint families, request context, response envelope, service/query/sour
 ## Required Output
 
 - Preflight understanding matrix and backend/data-service design or implemented service summary.
-- Targeted reading consumption: `prd/execution/prd-targeted-reading-analysis.md` status, consumed `SRC-*` / `READ-*` rows, backend-relevant evidence-to-decision trace, non-authority notes, and open `ENTRY-*` / `GAP-*`.
-- Upstream prototype handoff consumption: targeted reading rows, `docs/prototype-data-summary.md` status, Metric To Interface And Source Mapping coverage, Mock API To HTTP API Replacement Matrix coverage, component data key coverage, `prd-data-api-contract` coverage, and unresolved `GAP-*` rows.
+- `backendEntryMode` and its governing contract.
+- For `standalone-new-project`: `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, and `implementationVerificationMatrix`.
+- For `prototype-derived` only: targeted reading, prototype handoff/data-summary evidence, prototype baseline, `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, and `mockToRealBackendMatrix`.
 - API documentation/contract status.
 - Python/Flask SSO and multi-database architecture when applicable: app factory, route/service/repository/db layers, token validation, 401/403, database role map, env vars, and pool ownership.
 - Java/Spring Boot architecture when applicable: controller/service/mapper-or-repository layering, `ApiResponse<T>`, global exception handling, Spring Security/JWT/SSO, IAM/IAMA or local JWT bridge, Profile YAML, Maven/Gradle, Docker, and startup commands.
@@ -91,12 +96,15 @@ Decide endpoint families, request context, response envelope, service/query/sour
 ## Quality Gate
 
 - Do not implement routes from UI fields alone; trace endpoints to source/model/metric/permission contracts.
+- Do not require a prototype, prototype PRD, configured prototype project, or prototype data summary for `standalone-new-project` or ordinary `existing-project` backend development.
 - Do not implement or document table-backed interfaces before understanding every involved table's content, grain, keys, filter fields, samples, result bounds, and permission fields.
 - Do not mark interface implementation ready when client-visible filters are hidden in controller/service code instead of being request params mapped to source predicates.
 - Do not add aggregation, totals, rankings, formula calculation, broad in-memory processing, or unproven multi-table joins to a simple table retrieval endpoint. Query source-aligned rows first; route aggregate needs to explicit model/precompute/design work.
 - Do not implement or document prototype-derived backend behavior when `prd/execution/prd-targeted-reading-analysis.md` is missing, generic, lacks source-material/evidence-to-decision trace, or is not consumed by API/model/runtime choices.
 - Do not implement or document prototype-derived report APIs without consuming `docs/prototype-data-summary.md` and the PRD data/API execution files when they exist.
+- Do not start prototype-derived endpoint design when the fixed PRD core or `prd/children/prd-child-backend.md` is missing/stale, strict PRD validation is unrecorded, prototype version/source authority is unknown, or affected replacement rows lack bounded backend ownership.
 - Do not mark mock-to-real replacement ready when affected mock endpoints, component data keys, filters, interactions, exports, drilldowns, or conclusion-rule inputs lack replacement-matrix rows or explicit `GAP-*` blockers.
+- Do not mark backend work ready when any accepted prototype `API-*`, `OBJ-*`, `MET-*`, `FILTER-*`, `INT-*`, or `RULE-*` row lacks API/source/code/test trace, or when page/block/slot layout semantics have leaked into endpoint design.
 - Do not implement or document backend behavior before a Preflight understanding decision identifies source authority, API/model/frontend contracts, runtime target, and blockers.
 - Existing API response fields are stable across source/table/upstream replacement unless a versioned breaking change is documented.
 - Existing numeric response semantics are stable across source/table/upstream replacement: type, raw unit, display unit, scale, precision, formula, nullability, denominator-zero behavior, and export precision cannot drift without a versioned change.

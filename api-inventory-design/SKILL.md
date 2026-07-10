@@ -61,6 +61,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 For PRD/prototype-derived report work, read `prd/execution/prd-targeted-reading-analysis.md` before endpoint inventory. The API清单 must cite consumed `SRC-*` / `READ-*` rows, note non-authority materials, and link open `ENTRY-*` / `GAP-*` rows to endpoint scope, request params, response models, data-version behavior, filters, exports, detail/drilldown, and conclusion-rule inputs. Do not mark inventory rows `ready` when targeted reading is missing, generic, or not traceable to the affected API family.
 
+For completed-prototype handoff, also load `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md`. Build inventory rows from `prototypeContractConsumptionMatrix` and `mockToRealBackendMatrix`; keep upstream IDs, component/data-key consumers, source object, request-param predicate, permission/error behavior, and verification explicit without encoding UI layout.
+
 ## Workflow
 
 0. Check source authority.

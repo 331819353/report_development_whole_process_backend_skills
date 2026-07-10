@@ -14,6 +14,7 @@ Use this exact structure when producing a 数据模型文件.
 | Data owner | TBD(GAP-*) |
 | Model owner | TBD(GAP-*) |
 | Decision source | TBD(GAP-*) |
+| Prototype baseline / upstream IDs | none or prototype version plus `MET-*` / `OBJ-*` / `DATA-DESIGN-*` / `API-*` rows |
 | Status | partial |
 | Gap IDs | TBD(GAP-*) |
 
@@ -79,26 +80,31 @@ Field metadata:
 
 Metric type values: `atomic`, `derived`, `composite`.
 
-## 8. Transformation Mapping
+## 8. Prototype Contract And Source Evidence
+
+| Upstream ID | Consumer/data key | Metric/object/API | Physical source | Table-content evidence | Request-param predicates | Response model | Mock replacement status | Owner | Gap IDs |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+
+## 9. Transformation Mapping
 
 | Mapping ID | Source field/model | Logical field/model | Response field/model | Request param/source predicate | Transformation | Grain change | Minimal implementation mode | Time口径 | Permission filter | Quality check | Gap IDs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
-## 9. Security Rules
+## 10. Security Rules
 
 | Rule ID | Target model/field | Sensitivity | Masking rule | Field-level permission | No-permission behavior | Gap IDs |
 | --- | --- | --- | --- | --- | --- | --- |
 
 Sensitivity values: `public`, `internal`, `confidential`, `sensitive`, `unknown`.
 
-## 10. Data Quality Rules
+## 11. Data Quality Rules
 
 | Rule ID | Target model/field | Rule type | Rule description | Severity | Handling | Gap IDs |
 | --- | --- | --- | --- | --- | --- | --- |
 
 Rule types: `uniqueness`, `completeness`, `enum-validation`, `range-check`, `freshness`, `referential-integrity`, `reconciliation`, `dimension-hit-rate`, `metric-fluctuation`, `deduplication`, `backfill-readiness`.
 
-## 11. Layering, Summary, And Wide-Table Decisions
+## 12. Layering, Summary, And Wide-Table Decisions
 
 | Decision ID | Target model/API/page | Decision type | Query pattern or business reason | Selected layer/model | Grain | Dimensions retained | Metrics retained | Redundancy rule | Traceability path | Status | Gap IDs |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |

@@ -2,6 +2,10 @@
 
 Use this template when the user asks for 数据服务设计, 后端方案, API服务设计, query-service design, or a production-bound backend/data-service handoff.
 
+For completed-prototype handoff, apply `00-prototype-downstream-handoff-contract.md` before this template. Add its baseline, stable-ID consumption, backend trace/replacement, table-content, and request-predicate matrices; do not reduce them to one generic prototype input row.
+
+For standalone new services, apply `01-standalone-new-project-contract.md` instead. Use `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, and `implementationVerificationMatrix`; prototype handoff rows are not required.
+
 ## Stable IDs
 
 Use these prefixes consistently:
@@ -40,6 +44,8 @@ Open with 3-7 concise bullets:
 - runtime/security/observability/release approach;
 - readiness verdict and top blockers.
 
+State `backendEntryMode`: `standalone-new-project`, `existing-project`, or `prototype-derived`.
+
 ## 2. 输入、范围与上游衔接
 
 | Input ID | Source | Upstream artifact | Authority | Covered scope | Uncertainty/GAP |
@@ -63,12 +69,24 @@ For report/dashboard/cockpit work produced by the configurable prototype flow, i
 | HANDOFF-003 | `prd/execution/prd-data-api-contract.md` | API/data rows, request/response expectations, permission and state notes | API docs, backend design | ready / partial / blocked |
 | HANDOFF-004 | `prd/execution/prd-metric-dictionary-and-mounting.md` | metric definitions, formulas, units, mount locations, conclusion inputs | source/model mapping, numeric contract | ready / partial / blocked |
 | HANDOFF-005 | `prd/execution/prd-interaction-contract.md` | filter/action/drill/export/detail payloads | request params, query context, test cases | ready / partial / blocked |
+| HANDOFF-006 | `prd/children/prd-child-backend.md` | stage-owned source/API/model/permission/error/implementation scope | all backend artifacts | ready / partial / blocked |
+| HANDOFF-007 | Configured prototype/version | `frameworkTemplateId`, configured consumer IDs/data keys, `DELIVERY_INDEX.md`, runtime evidence | consumer trace and verification | ready / partial / blocked |
 
 Targeted reading consumption:
 
 | Consumption ID | Source row | Reading row | Backend decision affected | Non-authority/uncertainty | Linked artifact | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | READ-CONSUME-001 | SRC-* | READ-* | API-*/LGM-*/RSP-*/SVC-*/ENV-* | none / ENTRY-* / GAP-* | HANDOFF-* / REPL-* / MAP-* | ready / partial / blocked |
+
+Prototype contract matrices:
+
+| Matrix | Required contents |
+| --- | --- |
+| `prototypeContractConsumptionMatrix` | Upstream file/ID, authority, backend target, request/response fields, source object, action, verification, status/gap. |
+| `prototypeConfigurationTraceMatrix` | `API-*` / `OBJ-*` / `MET-*` / `FILTER-*` / `INT-*` / `RULE-*` to docs, code, source, tests, and runtime evidence. |
+| `mockToRealBackendMatrix` | Mock endpoint/data key/filter/interaction/conclusion/export/detail row to real API/source/model/method/permission/error/test. |
+| `tableContentUnderstandingMatrix` | Source object, representative rows, grain, keys, filter/permission fields, bounds, nulls, and gaps. |
+| `requestParamPredicateMatrix` | Request parameter, validation/default, source field, predicate, permission injection, index/order/page impact, evidence. |
 
 ## 3. 服务边界与分层架构
 

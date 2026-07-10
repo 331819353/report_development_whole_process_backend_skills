@@ -2,6 +2,10 @@
 
 Use this reference when creating the API document skeleton.
 
+For prototype-derived APIs, include a `Prototype Baseline And Contract Consumption` section before endpoint details with strict PRD/child-backend status, prototype version, accepted upstream IDs, `prototypeContractConsumptionMatrix`, `prototypeConfigurationTraceMatrix`, `mockToRealBackendMatrix`, `tableContentUnderstandingMatrix`, and `requestParamPredicateMatrix` status.
+
+For standalone APIs, include `backendEntryMode`, `standaloneBackendBaseline`, `serviceBoundaryMatrix`, `apiContractMatrix`, `sourceObjectUnderstandingMatrix`, `requestParamPredicateMatrix`, and `implementationVerificationMatrix`; omit prototype-only sections.
+
 ## Recommended Structure
 
 0. Human-readable summary

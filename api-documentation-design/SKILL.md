@@ -25,6 +25,8 @@ For non-trivial work, apply `$quality-gate-validation` `references/anti-laziness
 
 For PRD/prototype-derived report APIs, read `prd/execution/prd-targeted-reading-analysis.md` before documenting endpoint details. The API document must include consumed `SRC-*` / `READ-*` rows, source-authority notes, non-authority materials, and open `ENTRY-*` / `GAP-*` rows that affect request/response examples, field semantics, auth/permission, cache, export, detail/drilldown, and conclusion-rule payloads. Do not call an API document handoff-ready when targeted reading is missing, generic, or disconnected from endpoint decisions.
 
+For completed-prototype handoff, also load `backend-development-workflow/references/00-prototype-downstream-handoff-contract.md` and include prototype baseline/version, fixed child-backend status, upstream stable IDs, mock replacement row, consumer data key, table-content evidence, request-param predicate mapping, source/code/test trace, and verification in endpoint documentation.
+
 ## Core Workflow
 
 1. Collect inputs and select the documentation mode.

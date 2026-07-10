@@ -15,12 +15,13 @@ Use this exact table for API清单.
 
 ## API Inventory Table
 
-| API ID | Page/module/component | Business purpose | Method and path | Trigger | Request params | Request-param-to-source-field mapping | Response model | Source model dependency | Minimal implementation mode | Table-content evidence | Auth/permission | Pagination/sort/filter | Filter/sort/page execution stage | Report data-service backend | SQL query strategy | Frontend compute policy | Performance/resilience/cache/SLA | Priority | Status | Pending questions |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| API ID | Upstream prototype IDs | Page/module/component | Business purpose | Method and path | Trigger | Request params | Request-param-to-source-field mapping | Response model | Source model dependency | Mock replacement row | Minimal implementation mode | Table-content evidence | Auth/permission | Pagination/sort/filter | Filter/sort/page execution stage | Report data-service backend | SQL query strategy | Frontend compute policy | Performance/resilience/cache/SLA | Priority | Status | Pending questions |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 
 ## Column Rules
 
 - `API ID`: use `API-001`, `API-002`, or keep existing stable IDs.
+- `Upstream prototype IDs`: list related `PAGE-*`, `BLK-*`, `SLOT-*`, `MET-*`, `OBJ-*`, `FILTER-*`, `INT-*`, and `RULE-*`, or `none`.
 - `Page/module/component`: use the page, tab, and concrete data-bearing component or interaction name from requirements/prototype. Prefer one API row per component unless the endpoint splitting rules justify a component group.
 - `Business purpose`: write the decision or task this API supports.
 - `Method and path`: use stable REST-like paths when no convention exists.
@@ -29,6 +30,7 @@ Use this exact table for API清单.
 - `Request-param-to-source-field mapping`: map every client-visible filter/sort/page param to source field, operator, default/required behavior, and backend-injected scope; use `TBD(GAP-*)` when unknown.
 - `Response model`: use `RSP-*` or response model names from 数据模型文件.
 - `Source model dependency`: use `SRC-*`, `LGM-*`, or `TBD(GAP-*)`.
+- `Mock replacement row`: name the prototype mock endpoint/data key and replacement-matrix row, or `none`; unresolved mappings use `TBD(GAP-*)`.
 - `Minimal implementation mode`: use `source-query-simple`, `derived-summary-exception`, `non-table-action`, or `blocked`. `source-query-simple` means one source-aligned table/query path with projection, predicates, stable order, pagination, and no hidden aggregation/processing.
 - `Table-content evidence`: cite inspected table/view/fixture/upstream object, row grain, keys, filter fields, representative rows, permission fields, result bounds, and `GAP-*`.
 - `Auth/permission`: state auth need and data scope, or `TBD(GAP-*)`.
